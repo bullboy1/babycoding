@@ -1,0 +1,45 @@
+<svg viewBox="0 0 900 460" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="10" y="10" width="880" height="440" rx="16" fill="#0d1117" stroke="#30363d" stroke-width="1.5"/>
+
+  <text x="450" y="46" text-anchor="middle" font-size="21" font-weight="700" fill="#f0f6fc">Function Registry Protocol — Before vs. After</text>
+  <text x="450" y="68" text-anchor="middle" font-size="12" fill="#8b949e">Self-reported results from the author's own 15-day testing run — not an independent benchmark</text>
+
+  <line x1="450" y1="88" x2="450" y2="418" stroke="#30363d" stroke-width="1"/>
+
+  <!-- LEFT: Codex task throughput -->
+  <text x="235" y="104" text-anchor="middle" font-size="15" font-weight="700" fill="#58a6ff">Codex CLI · GPT-5.5-high · Plus plan</text>
+  <text x="235" y="123" text-anchor="middle" font-size="11.5" fill="#8b949e">Framework tasks completed per quota cycle</text>
+
+  <rect x="165" y="132" width="140" height="27" rx="13.5" fill="#122117" stroke="#238636" stroke-width="1"/>
+  <text x="235" y="150" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3fb950">+67% tasks/quota</text>
+
+  <line x1="70" y1="360" x2="400" y2="360" stroke="#30363d" stroke-width="1"/>
+
+  <rect x="110" y="246" width="80" height="114" rx="6" fill="#f85149" fill-opacity="0.85"/>
+  <text x="150" y="236" text-anchor="middle" font-size="20" font-weight="700" fill="#f85149">6</text>
+  <text x="150" y="380" text-anchor="middle" font-size="12" fill="#8b949e">Before FRP</text>
+
+  <rect x="270" y="170" width="80" height="190" rx="6" fill="#3fb950" fill-opacity="0.9"/>
+  <text x="310" y="160" text-anchor="middle" font-size="20" font-weight="700" fill="#3fb950">10</text>
+  <text x="310" y="380" text-anchor="middle" font-size="12" fill="#8b949e">After FRP</text>
+
+  <!-- RIGHT: Claude sustained unattended run -->
+  <text x="665" y="104" text-anchor="middle" font-size="15" font-weight="700" fill="#a371f7">Claude Opus 4.8 · Max 5x + Extended Thinking + Sub-agents</text>
+  <text x="665" y="123" text-anchor="middle" font-size="11.5" fill="#8b949e">Longest continuous unattended run before manual restart</text>
+
+  <text x="580" y="142" text-anchor="middle" font-size="11" fill="#8b949e">BEFORE</text>
+  <rect x="500" y="150" width="160" height="85" rx="10" fill="#2a1215" stroke="#f85149" stroke-width="1.2"/>
+  <text x="580" y="192" text-anchor="middle" font-size="25" font-weight="800" fill="#f85149">~1 hour</text>
+  <text x="580" y="212" text-anchor="middle" font-size="10.2" fill="#8b949e">before hitting the 5h usage wall</text>
+
+  <text x="665" y="272" text-anchor="middle" font-size="22" fill="#8b949e">↓</text>
+  <rect x="700" y="255" width="120" height="30" rx="15" fill="#1c1f3a" stroke="#a371f7" stroke-width="1"/>
+  <text x="760" y="275" text-anchor="middle" font-size="12" font-weight="700" fill="#a371f7">≈360× longer</text>
+
+  <text x="580" y="282" text-anchor="middle" font-size="11" fill="#8b949e">AFTER</text>
+  <rect x="500" y="290" width="160" height="85" rx="10" fill="#0f2417" stroke="#3fb950" stroke-width="1.2"/>
+  <text x="580" y="332" text-anchor="middle" font-size="25" font-weight="800" fill="#3fb950">15 days</text>
+  <text x="580" y="352" text-anchor="middle" font-size="10.2" fill="#8b949e">continuous /loop run, completed</text>
+
+  <text x="450" y="412" text-anchor="middle" font-size="10.5" fill="#6e7681">Claude Code + FRP  ·  Codex CLI + FRP  ·  measured July 2026</text>
+</svg>
