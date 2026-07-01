@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/logo.png" alt="babycoding logo" width="120">
+
 # Function Registry Protocol (FRP)
 
 **一套开箱即用的规则手册，防止 AI 编程助手重复发明你已经写过的函数。**

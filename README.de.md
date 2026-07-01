@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/logo.png" alt="babycoding logo" width="120">
+
 # Function Registry Protocol (FRP)
 
 **Ein fertiges Regelwerk, das KI-Coding-Agenten davon abhält, eure eigenen Funktionen neu zu erfinden.**

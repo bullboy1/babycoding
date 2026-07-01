@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/logo.png" alt="babycoding logo" width="120">
+
 # Function Registry Protocol (FRP)
 
 **A drop-in rulebook that stops AI coding agents from reinventing your own functions.**

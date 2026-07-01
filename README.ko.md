@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/logo.png" alt="babycoding logo" width="120">
+
 # Function Registry Protocol (FRP)
 
 **AI 코딩 에이전트가 이미 있는 함수를 다시 만드는 걸 막아주는, 그냥 갖다 쓰면 되는 규칙집입니다.**

@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/logo.png" alt="babycoding logo" width="120">
+
 # Function Registry Protocol (FRP)
 
 **AIコーディングエージェントが自分の関数を車輪の再発明してしまうのを防ぐ、そのまま使えるルールブック。**
