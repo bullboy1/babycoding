@@ -1,0 +1,387 @@
+{
+ "meta": {
+  "project": "babycode",
+  "stage": 2
+ },
+ "files": [
+  {
+   "path": "canvas/app.js",
+   "module": "canvas",
+   "functions": [
+    {
+     "name": "applyView",
+     "level": "L3",
+     "signature": "()",
+     "refs": 3,
+     "desc": "把平移缩放应用到画布"
+    },
+    {
+     "name": "screenToWorld",
+     "level": "L2",
+     "signature": "(cx,cy)",
+     "refs": 2,
+     "desc": "屏幕坐标换算成画布坐标"
+    },
+    {
+     "name": "refresh",
+     "level": "L3",
+     "signature": "()",
+     "refs": 3,
+     "desc": "重画卡片、连线和底部操作条"
+    },
+    {
+     "name": "setGraph",
+     "level": "L3",
+     "signature": "(graph)",
+     "refs": 3,
+     "desc": "装入一张新项目图并重置视图"
+    },
+    {
+     "name": "fitView",
+     "level": "L3",
+     "signature": "()",
+     "refs": 2,
+     "desc": "缩放平移到能看到整张图"
+    },
+    {
+     "name": "zoomAt",
+     "level": "L3",
+     "signature": "(cx,cy,factor)",
+     "refs": 3,
+     "desc": "以某个点为中心缩放画布"
+    },
+    {
+     "name": "onDown",
+     "level": "L4",
+     "signature": "(e)",
+     "refs": 1,
+     "desc": "按下鼠标：开始拖卡片或框选"
+    },
+    {
+     "name": "onMove",
+     "level": "L4",
+     "signature": "(e)",
+     "refs": 1,
+     "desc": "移动鼠标：拖动卡片或画选框"
+    },
+    {
+     "name": "onUp",
+     "level": "L4",
+     "signature": "(e)",
+     "refs": 1,
+     "desc": "松开鼠标：确定选区或落下卡片"
+    },
+    {
+     "name": "afterSelectionChange",
+     "level": "L3",
+     "signature": "()",
+     "refs": 4,
+     "desc": "选区变化后刷新界面和详情"
+    },
+    {
+     "name": "loadText",
+     "level": "L3",
+     "signature": "(name,text)",
+     "refs": 1,
+     "desc": "识别并载入 graph.json 或 FUNCTIONS.md"
+    },
+    {
+     "name": "readFile",
+     "level": "L3",
+     "signature": "(file)",
+     "refs": 2,
+     "desc": "读取用户拖入或选择的文件"
+    },
+    {
+     "name": "onPrompt",
+     "level": "L4",
+     "signature": "()",
+     "refs": 2,
+     "desc": "把选区和需求编译成指令并复制"
+    },
+    {
+     "name": "initApp",
+     "level": "L4",
+     "signature": "()",
+     "refs": 1,
+     "desc": "入口：绑定所有按钮和鼠标事件"
+    }
+   ]
+  },
+  {
+   "path": "canvas/data.js",
+   "module": "canvas",
+   "functions": [
+    {
+     "name": "baseName",
+     "level": "L1",
+     "signature": "(path)",
+     "refs": 2,
+     "desc": "取路径最后一段当卡片标题"
+    },
+    {
+     "name": "normalizeGraph",
+     "level": "L3",
+     "signature": "(raw)",
+     "refs": 4,
+     "desc": "把原始数据统一成画布内部结构"
+    },
+    {
+     "name": "markChanges",
+     "level": "L3",
+     "signature": "(files,entries)",
+     "refs": 1,
+     "desc": "把上次改动标记落到文件和函数上"
+    },
+    {
+     "name": "parseFunctionsMd",
+     "level": "L3",
+     "signature": "(text)",
+     "refs": 1,
+     "desc": "把 FUNCTIONS.md 注册表解析成图"
+    }
+   ]
+  },
+  {
+   "path": "canvas/layout.js",
+   "module": "canvas",
+   "functions": [
+    {
+     "name": "computeLayout",
+     "level": "L3",
+     "signature": "(graph)",
+     "refs": 1,
+     "desc": "按层级自动排布卡片和 tools 框"
+    },
+    {
+     "name": "layoutBbox",
+     "level": "L2",
+     "signature": "(positions,sizes,toolsBox)",
+     "refs": 2,
+     "desc": "算所有卡片的外接矩形"
+    },
+    {
+     "name": "edgePath",
+     "level": "L2",
+     "signature": "(fromPos,fromSize,toPos,toSize)",
+     "refs": 1,
+     "desc": "算两张卡片之间连线的曲线"
+    },
+    {
+     "name": "computeFit",
+     "level": "L2",
+     "signature": "(bbox,viewW,viewH)",
+     "refs": 1,
+     "desc": "算看全貌所需的缩放和位移"
+    }
+   ]
+  },
+  {
+   "path": "canvas/prompt.js",
+   "module": "canvas",
+   "functions": [
+    {
+     "name": "buildPrompt",
+     "level": "L3",
+     "signature": "(graph,selectedPaths,instruction)",
+     "refs": 1,
+     "desc": "选区加需求编译成给 AI 的完整指令"
+    },
+    {
+     "name": "collectDeps",
+     "level": "L3",
+     "signature": "(graph,selectedPaths)",
+     "refs": 1,
+     "desc": "找出选区依赖的可复用文件"
+    },
+    {
+     "name": "copyFallback",
+     "level": "L1",
+     "signature": "(text,done)",
+     "refs": 2,
+     "desc": "老浏览器的剪贴板复制兜底"
+    }
+   ]
+  },
+  {
+   "path": "canvas/render.js",
+   "module": "canvas",
+   "functions": [
+    {
+     "name": "esc",
+     "level": "L1",
+     "signature": "(s)",
+     "refs": 16,
+     "desc": "转义 HTML 特殊字符防注入"
+    },
+    {
+     "name": "cardHtml",
+     "level": "L3",
+     "signature": "(file,pos,selected)",
+     "refs": 1,
+     "desc": "生成单张功能卡片的 HTML"
+    },
+    {
+     "name": "edgesSvgHtml",
+     "level": "L3",
+     "signature": "(graph,layout,selection)",
+     "refs": 2,
+     "desc": "生成全部连线，选区相关标红"
+    },
+    {
+     "name": "renderWorld",
+     "level": "L3",
+     "signature": "(state)",
+     "refs": 1,
+     "desc": "全量重画整个画布世界"
+    },
+    {
+     "name": "renderDetail",
+     "level": "L3",
+     "signature": "(file)",
+     "refs": 4,
+     "desc": "显示单个文件的专业详情面板"
+    },
+    {
+     "name": "showToast",
+     "level": "L2",
+     "signature": "(msg)",
+     "refs": 5,
+     "desc": "弹出一条短暂的提示消息"
+    }
+   ]
+  },
+  {
+   "path": "tools/build_canvas.js",
+   "module": "tools",
+   "functions": [
+    {
+     "name": "readSrc",
+     "level": "L1",
+     "signature": "(f)",
+     "refs": 3,
+     "desc": "读取 canvas 源文件文本"
+    },
+    {
+     "name": "inlineAssets",
+     "level": "L3",
+     "signature": "(html)",
+     "refs": 1,
+     "desc": "内联 CSS 和 JS，注入版本戳"
+    }
+   ]
+  },
+  {
+   "path": "tools/scan_registry.js",
+   "module": "tools",
+   "functions": [
+    {
+     "name": "listSourceFiles",
+     "level": "L1",
+     "signature": "()",
+     "refs": 1,
+     "desc": "列出要扫描的源码文件"
+    },
+    {
+     "name": "parseFunctions",
+     "level": "L3",
+     "signature": "(text)",
+     "refs": 1,
+     "desc": "正则找出文件里的顶层函数"
+    },
+    {
+     "name": "buildRows",
+     "level": "L3",
+     "signature": "(files)",
+     "refs": 1,
+     "desc": "汇总函数事实，保留人工标注"
+    },
+    {
+     "name": "renderRegistry",
+     "level": "L3",
+     "signature": "(rows,today,canvasFlag)",
+     "refs": 2,
+     "desc": "把行渲染成 FUNCTIONS.md 文本"
+    },
+    {
+     "name": "buildGraph",
+     "level": "L3",
+     "signature": "(files,rows,changes)",
+     "refs": 1,
+     "desc": "生成画布用的 graph.json 结构"
+    },
+    {
+     "name": "diffRows",
+     "level": "L3",
+     "signature": "(oldText,newText)",
+     "refs": 1,
+     "desc": "对比新旧注册表，打印增删改"
+    },
+    {
+     "name": "main",
+     "level": "L4",
+     "signature": "()",
+     "refs": 1,
+     "desc": "入口：扫描，写注册表和图，或校验"
+    }
+   ]
+  }
+ ],
+ "edges": [
+  {
+   "from": "canvas/app.js",
+   "to": "canvas/data.js"
+  },
+  {
+   "from": "canvas/app.js",
+   "to": "canvas/layout.js"
+  },
+  {
+   "from": "canvas/app.js",
+   "to": "canvas/prompt.js"
+  },
+  {
+   "from": "canvas/app.js",
+   "to": "canvas/render.js"
+  },
+  {
+   "from": "canvas/render.js",
+   "to": "canvas/layout.js"
+  }
+ ],
+ "changes": {
+  "date": "2026-07-07",
+  "entries": [
+   {
+    "kind": "changed",
+    "name": "afterSelectionChange",
+    "path": "canvas/app.js"
+   },
+   {
+    "kind": "added",
+    "name": "markChanges",
+    "path": "canvas/data.js"
+   },
+   {
+    "kind": "added",
+    "name": "readSrc",
+    "path": "tools/build_canvas.js"
+   },
+   {
+    "kind": "added",
+    "name": "inlineAssets",
+    "path": "tools/build_canvas.js"
+   },
+   {
+    "kind": "changed",
+    "name": "renderRegistry",
+    "path": "tools/scan_registry.js"
+   },
+   {
+    "kind": "changed",
+    "name": "buildGraph",
+    "path": "tools/scan_registry.js"
+   }
+  ]
+ }
+}

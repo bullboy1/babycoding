@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<!-- babycode-canvas v2.1.0 | 固定制品：请勿手改或让 AI 重新生成；升级 = 重新下载 -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>babycode 画布 — 看得懂的项目地图</title>
+<style>
+:root {
+  --paper: #faf9f5;
+  --card: #ffffff;
+  --ink: #2c2c2a;
+  --ink-2: #5f5e5a;
+  --ink-3: #9a988f;
+  --line: #e3dfd4;
+  --line-2: #cfcaba;
+  --clay: #d97757;
+  --clay-soft: #fbeee8;
+  --blue: #185fa5;
+  --blue-soft: #e6f1fb;
+  --amber: #ba7517;
+  --amber-deep: #854f0b;
+  --amber-soft: #faeeda;
+  --green: #3b6d11;
+  --font: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --mono: "SF Mono", Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; margin: 0; }
+html, body { height: 100%; }
+body { font-family: var(--font); color: var(--ink); background: var(--paper); display: flex; flex-direction: column; overflow: hidden; }
+
+#topbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--card); }
+#brand { font-size: 15px; font-weight: 600; }
+#meta { font-size: 12px; font-weight: 400; color: var(--ink-3); margin-left: 10px; }
+#toolbar { display: flex; gap: 8px; }
+button { font-family: var(--font); font-size: 13px; color: var(--ink); background: var(--card); border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+button:hover { background: var(--paper); }
+button:active { transform: scale(0.98); }
+
+#legend { display: flex; gap: 16px; align-items: center; padding: 6px 16px; font-size: 12px; color: var(--ink-2); border-bottom: 1px solid var(--line); }
+#legend .hint { margin-left: auto; color: var(--ink-3); }
+#changes-chip { font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--amber); color: var(--amber-deep); background: var(--amber-soft); }
+#changes-chip:hover { background: #f6e3c3; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.sw-l4 { background: var(--blue-soft); border: 1px solid var(--blue); }
+.sw-l3 { background: var(--card); border: 1px solid var(--line-2); }
+.sw-tool { background: var(--paper); border: 1px dashed var(--ink-3); }
+
+#canvas { position: relative; flex: 1; overflow: hidden; cursor: default; }
+#world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+#edges { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+#edges path { fill: none; stroke: var(--line-2); stroke-width: 1.6; }
+#edges path.hot { stroke: var(--clay); stroke-width: 2; }
+#cards { position: absolute; left: 0; top: 0; }
+
+.card { position: absolute; width: 230px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 1px 3px rgba(60, 50, 30, 0.06); cursor: grab; user-select: none; }
+.card:hover { border-color: var(--line-2); }
+.card.selected { border: 2px solid var(--clay); box-shadow: 0 2px 8px rgba(217, 119, 87, 0.25); }
+.card.changed { border-color: var(--amber); }
+.badge-changed { float: right; font-size: 10px; color: var(--amber-deep); background: var(--amber-soft); border: 1px solid var(--amber); border-radius: 999px; padding: 1px 7px; margin: 1px 0 0 6px; }
+.fn-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.fn-dot.added { background: var(--green); }
+.fn-dot.changed { background: var(--amber); }
+.card-head { padding: 9px 12px 7px; border-bottom: 1px solid var(--line); border-radius: 11px 11px 0 0; }
+.card.l4 .card-head { background: var(--blue-soft); }
+.card-title { font-size: 13px; font-weight: 600; }
+.card.l4 .card-title { color: var(--blue); }
+.card-sub { font-size: 11px; color: var(--ink-3); font-family: var(--mono); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fn-row { display: flex; justify-content: space-between; gap: 8px; padding: 6px 12px; font-size: 12px; border-top: 1px solid #f1eee6; }
+.fn-row:first-of-type { border-top: none; }
+.fn-desc { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fn-desc.blank { color: var(--ink-3); font-style: italic; }
+.fn-refs { color: var(--ink-3); font-size: 11px; flex-shrink: 0; }
+
+#tools-box { position: absolute; border: 1.5px dashed var(--ink-3); border-radius: 16px; pointer-events: none; }
+#tools-label { position: absolute; font-size: 12px; font-weight: 600; color: var(--ink-2); background: var(--paper); padding: 0 8px; }
+
+#marquee { position: absolute; border: 1.5px dashed var(--clay); background: rgba(217, 119, 87, 0.07); border-radius: 6px; pointer-events: none; }
+#empty-tip { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 14px; color: var(--ink-3); }
+
+#detail { position: absolute; left: 16px; bottom: 78px; width: 340px; max-height: 45%; overflow: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 16px rgba(60, 50, 30, 0.12); padding: 12px 14px; font-size: 12px; z-index: 5; }
+#detail h3 { font-size: 13px; margin-bottom: 2px; }
+#detail .d-path { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin-bottom: 8px; word-break: break-all; }
+#detail table { width: 100%; border-collapse: collapse; }
+#detail td { padding: 4px 6px 4px 0; border-top: 1px solid #f1eee6; vertical-align: top; }
+#detail td.mono { font-family: var(--mono); font-size: 11px; color: var(--ink-2); white-space: nowrap; }
+#detail .d-note { margin-top: 8px; color: var(--ink-3); }
+#detail .d-close { position: absolute; right: 8px; top: 8px; border: none; background: none; font-size: 14px; color: var(--ink-3); padding: 2px 6px; }
+
+#action-bar { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--line-2); border-radius: 14px; box-shadow: 0 6px 20px rgba(60, 50, 30, 0.15); padding: 10px 12px; width: min(640px, 92vw); z-index: 6; }
+#sel-count { font-size: 12px; color: var(--ink-2); flex-shrink: 0; white-space: nowrap; }
+#instruction { flex: 1; font-family: var(--font); font-size: 13px; border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; resize: none; outline: none; }
+#instruction:focus { border-color: var(--clay); }
+#btn-prompt { background: var(--clay); color: #fff; border: none; flex-shrink: 0; }
+#btn-prompt:hover { background: #c9663f; }
+
+#toast { position: absolute; left: 50%; bottom: 92px; transform: translateX(-50%); background: var(--ink); color: #fff; font-size: 13px; padding: 8px 16px; border-radius: 10px; z-index: 9; }
+body.dropping #canvas { outline: 3px dashed var(--clay); outline-offset: -6px; }
+</style>
+</head>
+<body>
+<header id="topbar">
+  <div id="brand">babycode 画布<span id="meta"></span></div>
+  <div id="toolbar">
+    <button id="btn-open" title="打开 graph.json（阶段二）或 FUNCTIONS.md（阶段一）">打开项目数据</button>
+    <input type="file" id="file-input" accept=".json,.md,.txt" hidden>
+    <button id="btn-demo">演示项目</button>
+    <button id="btn-fit">看全貌</button>
+    <button id="btn-zoom-out" aria-label="缩小">−</button>
+    <button id="btn-zoom-in" aria-label="放大">＋</button>
+  </div>
+</header>
+<div id="legend">
+  <span><i class="sw sw-l4"></i>入口 / 流程</span>
+  <span><i class="sw sw-l3"></i>业务功能</span>
+  <span><i class="sw sw-tool"></i>tools 通用零件</span>
+  <button id="changes-chip" hidden></button>
+  <span class="hint">空白处拖拽 = 框选 · 拖动卡片 = 挪位置 · 滚轮 = 平移 · Ctrl/⌘ + 滚轮 = 缩放</span>
+</div>
+<main id="canvas">
+  <div id="world">
+    <svg id="edges" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="cards"></div>
+  </div>
+  <div id="marquee" hidden></div>
+  <div id="empty-tip" hidden>把 graph.json 或 FUNCTIONS.md 拖进来，就能看到你的项目地图</div>
+</main>
+<aside id="detail" hidden></aside>
+<footer id="action-bar" hidden>
+  <div id="sel-count"></div>
+  <textarea id="instruction" rows="2" placeholder="用大白话说想怎么改，例如：给会员价打个 95 折"></textarea>
+  <button id="btn-prompt">生成并复制 AI 指令</button>
+</footer>
+<div id="toast" hidden></div>
+<script>
+// data.js — 数据层：演示数据、graph.json 规范化、FUNCTIONS.md 解析（零依赖，可在 node 中测试）
+
+var LEVEL_RANK = { L1: 1, L2: 2, L3: 3, L4: 4 };
+var LEVEL_WORDS = { L4: '入口 / 流程', L3: '业务功能', L2: '通用零件', L1: '基础零件' };
+
+var DEMO_GRAPH = {
+  meta: { project: '演示：小小商城', stage: 2 },
+  files: [
+    { path: 'src/app/checkout.ts', module: 'app', functions: [
+      { name: 'placeOrder', level: 'L4', signature: '(req)->Order', refs: 1, desc: '下单主流程：库存、算价、建单、通知' }
+    ]},
+    { path: 'src/orders/stock.ts', module: 'orders', functions: [
+      { name: 'checkStock', level: 'L3', signature: '(items)->bool', refs: 2, desc: '检查库存够不够' }
+    ]},
+    { path: 'src/orders/pricing.ts', module: 'orders', functions: [
+      { name: 'calcPrice', level: 'L3', signature: '(cart)->Money', refs: 2, desc: '算出购物车总价' },
+      { name: 'applyCoupon', level: 'L3', signature: '(price,code)->Money', refs: 1, desc: '按优惠券调整价格' },
+      { name: 'applyMemberDiscount', level: 'L3', signature: '(price,user)->Money', refs: 1, desc: '给会员打 95 折' }
+    ]},
+    { path: 'src/orders/create.ts', module: 'orders', functions: [
+      { name: 'createOrder', level: 'L3', signature: '(cart,price)->Order', refs: 1, desc: '把订单存进数据库' }
+    ]},
+    { path: 'src/notify/email.ts', module: 'notify', functions: [
+      { name: 'sendOrderEmail', level: 'L3', signature: '(order)->void', refs: 1, desc: '给买家发确认邮件' }
+    ]},
+    { path: 'src/utils/money.ts', module: 'utils', functions: [
+      { name: 'formatMoney', level: 'L2', signature: '(n)->str', refs: 7, desc: '金额变成 ¥xx.xx 文本' }
+    ]},
+    { path: 'src/utils/http.ts', module: 'utils', functions: [
+      { name: 'retryFetch', level: 'L2', signature: '(url,opt)->Resp', refs: 3, desc: '失败会自动重试的网络请求' }
+    ]},
+    { path: 'src/utils/time.ts', module: 'utils', functions: [
+      { name: 'parseDate', level: 'L1', signature: '(s)->Date', refs: 4, desc: '文本日期转日期对象' }
+    ]},
+    { path: 'src/utils/validate.ts', module: 'utils', functions: [
+      { name: 'validateSku', level: 'L1', signature: '(sku)->bool', refs: 2, desc: '检查商品编号格式对不对' }
+    ]}
+  ],
+  edges: [
+    { from: 'src/app/checkout.ts', to: 'src/orders/stock.ts' },
+    { from: 'src/app/checkout.ts', to: 'src/orders/pricing.ts' },
+    { from: 'src/app/checkout.ts', to: 'src/orders/create.ts' },
+    { from: 'src/app/checkout.ts', to: 'src/notify/email.ts' },
+    { from: 'src/orders/pricing.ts', to: 'src/utils/money.ts' },
+    { from: 'src/orders/stock.ts', to: 'src/utils/http.ts' },
+    { from: 'src/orders/create.ts', to: 'src/utils/time.ts' },
+    { from: 'src/orders/create.ts', to: 'src/utils/validate.ts' },
+    { from: 'src/notify/email.ts', to: 'src/utils/http.ts' },
+    { from: 'src/notify/email.ts', to: 'src/utils/money.ts' }
+  ],
+  changes: { date: '2026-07-08', entries: [
+    { path: 'src/orders/pricing.ts', name: 'applyMemberDiscount', kind: 'added' },
+    { path: 'src/orders/pricing.ts', name: 'calcPrice', kind: 'changed' }
+  ]}
+};
+
+// 取路径最后一段作为卡片标题（专业名给 AI，标题给人扫一眼）
+function baseName(path) {
+  var parts = String(path).split('/');
+  return parts[parts.length - 1] || path;
+}
+
+// 文件层级 = 其函数的最高层级；全部未标注时按 L3 处理
+function fileLevel(functions) {
+  var best = 0;
+  for (var i = 0; i < functions.length; i++) {
+    var r = LEVEL_RANK[functions[i].level] || 0;
+    if (r > best) best = r;
+  }
+  return best ? 'L' + best : 'L3';
+}
+
+// 把 graph.json / 解析结果统一成 viewer 内部结构（容错：缺列按 '-' 处理）
+function normalizeGraph(raw) {
+  var files = (raw.files || []).map(function (f) {
+    var fns = (f.functions || []).map(function (fn) {
+      return {
+        name: fn.name || '-',
+        level: LEVEL_RANK[fn.level] ? fn.level : '-',
+        signature: fn.signature && fn.signature !== '-' ? fn.signature : '',
+        refs: fn.refs === 0 || fn.refs ? fn.refs : '-',
+        desc: fn.desc && fn.desc !== '-' ? fn.desc : ''
+      };
+    });
+    var lv = fileLevel(fns);
+    return {
+      path: f.path, module: f.module || moduleOf(f.path), name: baseName(f.path),
+      level: lv, isTool: LEVEL_RANK[lv] <= 2, functions: fns
+    };
+  });
+  var known = {};
+  files.forEach(function (f) { known[f.path] = true; });
+  var edges = (raw.edges || []).filter(function (e) { return known[e.from] && known[e.to] && e.from !== e.to; });
+  var changes = raw.changes && raw.changes.entries && raw.changes.entries.length ? raw.changes : null;
+  if (changes) markChanges(files, changes.entries);
+  return { meta: raw.meta || {}, files: files, edges: edges, changes: changes };
+}
+
+// 把"上次任务动过"的标记落到文件和函数上，画布据此高亮
+function markChanges(files, entries) {
+  files.forEach(function (f) {
+    f.functions.forEach(function (fn) {
+      entries.forEach(function (e) {
+        if (e.path === f.path && e.name === fn.name && e.kind !== 'removed') {
+          fn.changedKind = e.kind;
+          f.changed = true;
+        }
+      });
+    });
+  });
+}
+
+// 用倒数第二层目录当模块名；单层路径就用文件名
+function moduleOf(path) {
+  var parts = String(path).split('/');
+  return parts.length > 1 ? parts[parts.length - 2] : baseName(path);
+}
+
+// 解析 FUNCTIONS.md（阶段一项目没有 graph.json，直接喂注册表也能出图，只是没有连线）
+function parseFunctionsMd(text) {
+  var lines = String(text).split('\n');
+  var meta = { stage: 1 };
+  var head = /stage:(\d+)/.exec(lines[0] || '');
+  if (head) meta.stage = parseInt(head[1], 10);
+  var byPath = {};
+  var order = [];
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (line.charAt(0) !== '|') continue;
+    var c = line.split('|').map(function (s) { return s.trim(); });
+    if (c.length < 7 || c[1] === 'name') continue;
+    if (c[1] === 'module' || (!LEVEL_RANK[c[2]] && c[2] !== '-')) {
+      throw new Error('这像是阶段三的索引文件，请改用 docs/registry/graph.json');
+    }
+    var path = c[4];
+    if (!byPath[path]) { byPath[path] = []; order.push(path); }
+    byPath[path].push({ name: c[1], level: c[2], signature: c[3], refs: c[5], desc: c[6] });
+  }
+  if (!order.length) throw new Error('没有解析到任何函数行，确认是 FUNCTIONS.md 或 graph.json');
+  var files = order.map(function (p) { return { path: p, functions: byPath[p] }; });
+  return normalizeGraph({ meta: meta, files: files, edges: [] });
+}
+
+// layout.js — 布局层：卡片测量、分层排布、连线走向、适配视图（纯计算，可在 node 中测试）
+
+var CARD_W = 230;
+var GAP_X = 70;
+var GAP_Y = 90;
+var ROW_CAP = 4;
+
+// 卡片高度 = 头部 + 每个函数一行；与 style.css 的行高保持一致
+function measureCard(file) {
+  return { w: CARD_W, h: 50 + file.functions.length * 30 };
+}
+
+// 流程区（L3/L4）按层分行，tools（L1/L2）靠右成竖列并框起来
+function computeLayout(graph) {
+  var positions = {}, sizes = {};
+  graph.files.forEach(function (f) { sizes[f.path] = measureCard(f); });
+  var flow = graph.files.filter(function (f) { return !f.isTool; });
+  var tools = graph.files.filter(function (f) { return f.isTool; });
+  var rows = [];
+  ['L4', 'L3'].forEach(function (lv) {
+    var group = flow.filter(function (f) { return f.level === lv; });
+    for (var i = 0; i < group.length; i += ROW_CAP) rows.push(group.slice(i, i + ROW_CAP));
+  });
+  var y = 40, flowRight = 0;
+  rows.forEach(function (row) {
+    var width = row.length * CARD_W + (row.length - 1) * GAP_X;
+    var x = Math.max(40, (ROW_CAP * CARD_W + (ROW_CAP - 1) * GAP_X - width) / 2 + 40);
+    var maxH = 0;
+    row.forEach(function (f) {
+      positions[f.path] = { x: x, y: y };
+      x += CARD_W + GAP_X;
+      if (sizes[f.path].h > maxH) maxH = sizes[f.path].h;
+    });
+    if (x - GAP_X > flowRight) flowRight = x - GAP_X;
+    y += maxH + GAP_Y;
+  });
+  var toolsBox = null;
+  if (tools.length) {
+    var tx = (flowRight || 40) + 110, ty = 40, boxBottom = ty;
+    tools.forEach(function (f) {
+      positions[f.path] = { x: tx + 24, y: boxBottom + 46 };
+      boxBottom = positions[f.path].y + sizes[f.path].h - 26;
+    });
+    toolsBox = { x: tx, y: ty, w: CARD_W + 48, h: boxBottom - ty + 50 };
+  }
+  return { positions: positions, sizes: sizes, toolsBox: toolsBox, bbox: layoutBbox(positions, sizes, toolsBox) };
+}
+
+// 全部卡片 + tools 框的外接矩形，用于"看全貌"
+function layoutBbox(positions, sizes, toolsBox) {
+  var x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+  Object.keys(positions).forEach(function (p) {
+    var pos = positions[p], s = sizes[p];
+    if (pos.x < x1) x1 = pos.x;
+    if (pos.y < y1) y1 = pos.y;
+    if (pos.x + s.w > x2) x2 = pos.x + s.w;
+    if (pos.y + s.h > y2) y2 = pos.y + s.h;
+  });
+  if (toolsBox) {
+    if (toolsBox.x < x1) x1 = toolsBox.x;
+    if (toolsBox.y < y1) y1 = toolsBox.y;
+    if (toolsBox.x + toolsBox.w > x2) x2 = toolsBox.x + toolsBox.w;
+    if (toolsBox.y + toolsBox.h > y2) y2 = toolsBox.y + toolsBox.h;
+  }
+  if (x1 === Infinity) return { x: 0, y: 0, w: 800, h: 500 };
+  return { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+}
+
+// 连线锚点：横向差距大走左右侧边，否则走下边→上边
+function edgePath(fromPos, fromSize, toPos, toSize) {
+  var fcx = fromPos.x + fromSize.w / 2, tcx = toPos.x + toSize.w / 2;
+  var dx = (toPos.x > fromPos.x + fromSize.w || fromPos.x > toPos.x + toSize.w);
+  var x1, y1, x2, y2;
+  if (dx) {
+    var leftToRight = tcx > fcx;
+    x1 = leftToRight ? fromPos.x + fromSize.w : fromPos.x;
+    y1 = fromPos.y + fromSize.h / 2;
+    x2 = leftToRight ? toPos.x : toPos.x + toSize.w;
+    y2 = toPos.y + toSize.h / 2;
+    var mx = (x1 + x2) / 2;
+    return 'M' + x1 + ',' + y1 + ' C' + mx + ',' + y1 + ' ' + mx + ',' + y2 + ' ' + x2 + ',' + y2;
+  }
+  var down = toPos.y > fromPos.y;
+  x1 = fcx; y1 = down ? fromPos.y + fromSize.h : fromPos.y;
+  x2 = tcx; y2 = down ? toPos.y : toPos.y + toSize.h;
+  var my = (y1 + y2) / 2;
+  return 'M' + x1 + ',' + y1 + ' C' + x1 + ',' + my + ' ' + x2 + ',' + my + ' ' + x2 + ',' + y2;
+}
+
+// 算出能看到整张图的缩放与平移
+function computeFit(bbox, viewW, viewH) {
+  var scale = Math.min((viewW - 60) / bbox.w, (viewH - 60) / bbox.h, 1);
+  if (!(scale > 0)) scale = 1;
+  if (scale < 0.2) scale = 0.2;
+  return {
+    scale: scale,
+    x: (viewW - bbox.w * scale) / 2 - bbox.x * scale,
+    y: (viewH - bbox.h * scale) / 2 - bbox.y * scale
+  };
+}
+
+// prompt.js — 指挥台：把画布选区编译成一条带精确上下文的 AI 指令（上下文编译器）
+
+// 选区 → 指令文本：范围、专业签名、可复用零件、FRP 约束一次说清
+function buildPrompt(graph, selectedPaths, instruction) {
+  var sel = graph.files.filter(function (f) { return selectedPaths.indexOf(f.path) >= 0; });
+  var lines = [];
+  lines.push('【babycode 画布指令】先读项目根目录 CLAUDE.md（FRP 协议）并遵守：动手前查 FUNCTIONS.md，能复用不新写；最小 diff；结束前更新注册表。');
+  lines.push('');
+  lines.push('本次改造范围（用户在画布上框选的文件）：');
+  sel.forEach(function (f) {
+    lines.push('- ' + f.path);
+    f.functions.forEach(function (fn) {
+      var d = fn.desc ? ' — ' + fn.desc : '';
+      lines.push('  - ' + fn.name + ' ' + (fn.level !== '-' ? fn.level : '') + ' ' + fn.signature + d);
+    });
+  });
+  var deps = collectDeps(graph, selectedPaths);
+  if (deps.length) {
+    lines.push('');
+    lines.push('选区直接依赖的文件（优先复用，不在改造范围）：');
+    deps.forEach(function (f) {
+      var names = f.functions.map(function (fn) { return fn.name; }).join(', ');
+      lines.push('- ' + f.path + '（' + names + '）');
+    });
+  }
+  lines.push('');
+  lines.push('用户需求：');
+  lines.push(instruction || '（用户未填写，先向用户确认需求再动手）');
+  lines.push('');
+  lines.push('约束：不改动范围外文件；tools（L1/L2）里已有的能力必须复用，不许重写。');
+  return lines.join('\n');
+}
+
+// 找出选区向外引用的文件，作为"可复用"上下文一并交给 AI
+function collectDeps(graph, selectedPaths) {
+  var out = [], seen = {};
+  graph.edges.forEach(function (e) {
+    if (selectedPaths.indexOf(e.from) >= 0 && selectedPaths.indexOf(e.to) < 0 && !seen[e.to]) {
+      seen[e.to] = true;
+      var f = graph.files.filter(function (x) { return x.path === e.to; })[0];
+      if (f) out.push(f);
+    }
+  });
+  return out;
+}
+
+// 复制到剪贴板；老浏览器与 file:// 环境退回隐藏 textarea 方案
+function copyText(text, done) {
+  if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () { done(true); }, function () { copyFallback(text, done); });
+  } else {
+    copyFallback(text, done);
+  }
+}
+
+function copyFallback(text, done) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  var ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+  document.body.removeChild(ta);
+  done(ok);
+}
+
+// render.js — 渲染层：把 graph + layout 画成卡片、连线、tools 框、详情面板
+
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// 单张卡片：标题给人看，函数行 = 白话描述 + 被引用次数 + 改动圆点
+function cardHtml(file, pos, selected) {
+  var rows = file.functions.map(function (fn) {
+    var d = fn.desc ? esc(fn.desc) : '（还没写白话说明）';
+    var cls = fn.desc ? 'fn-desc' : 'fn-desc blank';
+    var refs = fn.refs !== '-' ? '被用 ' + esc(fn.refs) + ' 处' : '';
+    var dot = fn.changedKind ?
+      '<i class="fn-dot ' + fn.changedKind + '" title="上次任务' + (fn.changedKind === 'added' ? '新增' : '改动') + '"></i>' : '';
+    return '<div class="fn-row"><span class="' + cls + '" title="' + esc(fn.name) + ' ' + esc(fn.signature) + '">' + dot + d +
+      '</span><span class="fn-refs">' + refs + '</span></div>';
+  }).join('');
+  var cls = 'card ' + file.level.toLowerCase() + (selected ? ' selected' : '') + (file.changed ? ' changed' : '');
+  var badge = file.changed ? '<span class="badge-changed">上次改动</span>' : '';
+  return '<div class="' + cls + '" data-path="' + esc(file.path) + '" style="left:' + pos.x + 'px;top:' + pos.y + 'px">' +
+    '<div class="card-head">' + badge + '<div class="card-title">' + esc(file.name) + '</div>' +
+    '<div class="card-sub">' + esc(file.module) + ' · ' + esc(LEVEL_WORDS[file.level] || file.level) + '</div></div>' + rows + '</div>';
+}
+
+// tools 虚线框 + 标签（在画布坐标系内，跟随缩放平移）
+function toolsBoxHtml(box) {
+  if (!box) return '';
+  return '<div id="tools-box" style="left:' + box.x + 'px;top:' + box.y + 'px;width:' + box.w + 'px;height:' + box.h + 'px"></div>' +
+    '<div id="tools-label" style="left:' + (box.x + 16) + 'px;top:' + (box.y - 8) + 'px">tools · 可复用零件</div>';
+}
+
+// 连线整体重画；与选区相连的线标红，帮人看清"动这里会牵扯谁"
+function edgesSvgHtml(graph, layout, selection) {
+  return graph.edges.map(function (e) {
+    var fp = layout.positions[e.from], tp = layout.positions[e.to];
+    if (!fp || !tp) return '';
+    var hot = selection.has(e.from) || selection.has(e.to);
+    var d = edgePath(fp, layout.sizes[e.from], tp, layout.sizes[e.to]);
+    return '<path class="' + (hot ? 'hot' : '') + '" data-from="' + esc(e.from) + '" data-to="' + esc(e.to) + '" d="' + d + '"/>';
+  }).join('');
+}
+
+// 全量重绘世界（小图足够快，逻辑简单不出错）
+function renderWorld(state) {
+  var g = state.graph, l = state.layout;
+  var html = toolsBoxHtml(l.toolsBox);
+  g.files.forEach(function (f) {
+    html += cardHtml(f, l.positions[f.path], state.sel.has(f.path));
+  });
+  document.getElementById('cards').innerHTML = html;
+  var svg = document.getElementById('edges');
+  svg.setAttribute('width', l.bbox.x + l.bbox.w + 200);
+  svg.setAttribute('height', l.bbox.y + l.bbox.h + 200);
+  svg.innerHTML = edgesSvgHtml(g, l, state.sel);
+  document.getElementById('meta').textContent = metaText(g);
+  document.getElementById('empty-tip').hidden = g.files.length > 0;
+  renderChangesChip(g);
+}
+
+// 顶栏小胶囊：有改动记录才出现，点击一键选中"AI 动过的地方"
+function renderChangesChip(graph) {
+  var chip = document.getElementById('changes-chip');
+  chip.hidden = !graph.changes;
+  if (graph.changes) {
+    chip.textContent = '上次 AI 任务动了 ' + graph.changes.entries.length + ' 处（' + graph.changes.date + '）点我高亮';
+  }
+}
+
+function metaText(graph) {
+  var fnCount = graph.files.reduce(function (n, f) { return n + f.functions.length; }, 0);
+  var name = graph.meta.project || '未命名项目';
+  return name + ' · ' + graph.files.length + ' 个功能块 · ' + fnCount + ' 个功能' + (graph.edges.length ? '' : ' · 无连线数据（阶段一）');
+}
+
+// 详情面板：白话在卡片上，专业信息（给 AI 的）收在这里
+function renderDetail(file) {
+  var el = document.getElementById('detail');
+  if (!file) { el.hidden = true; return; }
+  var rows = file.functions.map(function (fn) {
+    return '<tr><td class="mono">' + esc(fn.name) + '</td><td class="mono">' + esc(fn.level) + ' ' + esc(fn.signature) +
+      '</td><td>' + esc(fn.desc || '-') + '</td></tr>';
+  }).join('');
+  el.innerHTML = '<button class="d-close" data-close="1">✕</button><h3>' + esc(file.name) + '</h3>' +
+    '<div class="d-path">' + esc(file.path) + '</div><table>' + rows + '</table>' +
+    '<div class="d-note">这些是给 AI 查表用的专业信息，来自 FUNCTIONS.md，你不需要看懂。</div>';
+  el.hidden = false;
+}
+
+// 底部操作条：选了东西才出现，引导"框选 → 说人话 → 拿指令"
+function renderActionBar(state) {
+  var bar = document.getElementById('action-bar');
+  var n = state.sel.size;
+  bar.hidden = n === 0;
+  if (n > 0) document.getElementById('sel-count').textContent = '已选 ' + n + ' 个功能块';
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(function () { t.hidden = true; }, 2600);
+}
+
+// app.js — 交互层：平移缩放、框选、拖卡片、载入数据、把选区变成指令
+
+var state = { graph: null, layout: null, sel: new Set(), view: { x: 0, y: 0, scale: 1 } };
+var gesture = null;
+
+function applyView() {
+  document.getElementById('world').style.transform =
+    'translate(' + state.view.x + 'px,' + state.view.y + 'px) scale(' + state.view.scale + ')';
+}
+
+function screenToWorld(cx, cy) {
+  var r = document.getElementById('canvas').getBoundingClientRect();
+  return { x: (cx - r.left - state.view.x) / state.view.scale, y: (cy - r.top - state.view.y) / state.view.scale };
+}
+
+function refresh() { renderWorld(state); renderActionBar(state); }
+
+function setGraph(graph) {
+  state.graph = graph;
+  state.layout = computeLayout(graph);
+  state.sel = new Set();
+  fitView();
+  refresh();
+  renderDetail(null);
+}
+
+function fitView() {
+  var c = document.getElementById('canvas');
+  state.view = computeFit(state.layout.bbox, c.clientWidth, c.clientHeight);
+  applyView();
+}
+
+function zoomAt(cx, cy, factor) {
+  var r = document.getElementById('canvas').getBoundingClientRect();
+  var s = Math.min(2.5, Math.max(0.2, state.view.scale * factor));
+  var k = s / state.view.scale;
+  state.view.x = (cx - r.left) - ((cx - r.left) - state.view.x) * k;
+  state.view.y = (cy - r.top) - ((cy - r.top) - state.view.y) * k;
+  state.view.scale = s;
+  applyView();
+}
+
+function onWheel(e) {
+  e.preventDefault();
+  if (e.ctrlKey || e.metaKey) zoomAt(e.clientX, e.clientY, Math.pow(1.0015, -e.deltaY));
+  else { state.view.x -= e.deltaX; state.view.y -= e.deltaY; applyView(); }
+}
+
+function onDown(e) {
+  if (e.button !== 0) return;
+  var card = e.target.closest ? e.target.closest('.card') : null;
+  if (card) {
+    var p = state.layout.positions[card.dataset.path];
+    gesture = { type: 'card', path: card.dataset.path, el: card, sx: e.clientX, sy: e.clientY,
+      ox: p.x, oy: p.y, moved: false, shift: e.shiftKey };
+  } else {
+    gesture = { type: 'marquee', sx: e.clientX, sy: e.clientY, moved: false, shift: e.shiftKey };
+  }
+}
+
+function onMove(e) {
+  if (!gesture) return;
+  var dx = e.clientX - gesture.sx, dy = e.clientY - gesture.sy;
+  if (Math.abs(dx) + Math.abs(dy) > 4) gesture.moved = true;
+  if (!gesture.moved) return;
+  if (gesture.type === 'card') {
+    var p = state.layout.positions[gesture.path];
+    p.x = gesture.ox + dx / state.view.scale;
+    p.y = gesture.oy + dy / state.view.scale;
+    gesture.el.style.left = p.x + 'px';
+    gesture.el.style.top = p.y + 'px';
+    document.getElementById('edges').innerHTML = edgesSvgHtml(state.graph, state.layout, state.sel);
+  } else {
+    var m = document.getElementById('marquee');
+    var r = document.getElementById('canvas').getBoundingClientRect();
+    m.hidden = false;
+    m.style.left = Math.min(gesture.sx, e.clientX) - r.left + 'px';
+    m.style.top = Math.min(gesture.sy, e.clientY) - r.top + 'px';
+    m.style.width = Math.abs(dx) + 'px';
+    m.style.height = Math.abs(dy) + 'px';
+  }
+}
+
+function onUp(e) {
+  if (!gesture) return;
+  var g = gesture;
+  gesture = null;
+  document.getElementById('marquee').hidden = true;
+  if (g.type === 'card') {
+    if (g.moved) {
+      state.layout.bbox = layoutBbox(state.layout.positions, state.layout.sizes, state.layout.toolsBox);
+      refresh();
+    } else { applySelectClick(g.path, g.shift); }
+    return;
+  }
+  if (!g.moved) { state.sel = new Set(); afterSelectionChange(); return; }
+  var a = screenToWorld(Math.min(g.sx, e.clientX), Math.min(g.sy, e.clientY));
+  var b = screenToWorld(Math.max(g.sx, e.clientX), Math.max(g.sy, e.clientY));
+  selectInRect(a.x, a.y, b.x, b.y, g.shift);
+}
+
+function applySelectClick(path, shift) {
+  if (shift) { if (state.sel.has(path)) state.sel.delete(path); else state.sel.add(path); }
+  else { state.sel = new Set([path]); }
+  afterSelectionChange();
+}
+
+function selectInRect(x1, y1, x2, y2, additive) {
+  if (!additive) state.sel = new Set();
+  state.graph.files.forEach(function (f) {
+    var p = state.layout.positions[f.path], s = state.layout.sizes[f.path];
+    if (p.x < x2 && p.x + s.w > x1 && p.y < y2 && p.y + s.h > y1) state.sel.add(f.path);
+  });
+  afterSelectionChange();
+}
+
+function afterSelectionChange() {
+  refresh();
+  if (state.sel.size === 1) {
+    var path = Array.from(state.sel)[0];
+    renderDetail(state.graph.files.filter(function (f) { return f.path === path; })[0]);
+  } else { renderDetail(null); }
+}
+
+// 一键选中上次任务动过的文件，配合底部指令条继续追问或改造
+function selectChanged() {
+  if (!state.graph.changes) return;
+  state.sel = new Set(state.graph.changes.entries.map(function (e) { return e.path; })
+    .filter(function (p) { return state.layout.positions[p]; }));
+  afterSelectionChange();
+}
+
+function loadText(name, text) {
+  try {
+    var graph = /^\s*[\[{]/.test(text) ? normalizeGraph(JSON.parse(text)) : parseFunctionsMd(text);
+    if (!graph.meta.project) graph.meta.project = name;
+    setGraph(graph);
+    showToast('已载入 ' + name);
+  } catch (err) { showToast('没读懂这个文件：' + err.message); }
+}
+
+function readFile(file) {
+  var r = new FileReader();
+  r.onload = function () { loadText(file.name, r.result); };
+  r.readAsText(file);
+}
+
+function onPrompt() {
+  var txt = document.getElementById('instruction').value.trim();
+  var p = buildPrompt(state.graph, Array.from(state.sel), txt);
+  copyText(p, function (ok) {
+    showToast(ok ? '指令已复制，去粘贴给 Claude Code 吧' : '复制失败，指令已打印到控制台（F12 查看）');
+    if (!ok) console.log(p);
+  });
+}
+
+function initApp() {
+  var canvas = document.getElementById('canvas');
+  canvas.addEventListener('wheel', onWheel, { passive: false });
+  canvas.addEventListener('mousedown', onDown);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  document.getElementById('btn-fit').onclick = fitView;
+  document.getElementById('btn-zoom-in').onclick = function () { zoomAt(canvas.clientWidth / 2, canvas.clientHeight / 2, 1.25); };
+  document.getElementById('btn-zoom-out').onclick = function () { zoomAt(canvas.clientWidth / 2, canvas.clientHeight / 2, 0.8); };
+  document.getElementById('btn-demo').onclick = function () { setGraph(normalizeGraph(DEMO_GRAPH)); };
+  document.getElementById('btn-open').onclick = function () { document.getElementById('file-input').click(); };
+  document.getElementById('file-input').onchange = function (e) { if (e.target.files[0]) readFile(e.target.files[0]); };
+  document.getElementById('btn-prompt').onclick = onPrompt;
+  document.getElementById('changes-chip').onclick = selectChanged;
+  document.getElementById('detail').addEventListener('click', function (e) {
+    if (e.target.dataset.close) renderDetail(null);
+  });
+  document.getElementById('instruction').addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') onPrompt();
+  });
+  window.addEventListener('dragover', function (e) { e.preventDefault(); document.body.classList.add('dropping'); });
+  window.addEventListener('dragleave', function () { document.body.classList.remove('dropping'); });
+  window.addEventListener('drop', function (e) {
+    e.preventDefault();
+    document.body.classList.remove('dropping');
+    if (e.dataTransfer.files[0]) readFile(e.dataTransfer.files[0]);
+  });
+  setGraph(normalizeGraph(DEMO_GRAPH));
+}
+
+document.addEventListener('DOMContentLoaded', initApp);
+
+</script>
+</body>
+</html>

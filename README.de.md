@@ -137,7 +137,7 @@ Fixkosten pro Aufgabe ≈ der Protokollkörper (~1k Tokens) + der relevante Regi
 
 ## Einstellbare Stellschrauben
 
-Stage-Schwellenwerte (30 / 200), Zeilenlimits (50 / 300), Ordnertiefe (4) und Beschreibungslänge (12 Wörter) sind einfach nur Zahlen — ändert sie nach dem Geschmack eures Teams. Wenn ihr das tut, aktualisiert auch die Self-Check-Liste in §10 der Protokolldatei, damit Regel und Check niemals auseinanderdriften.
+Stage-Schwellenwerte (30 / 200), Zeilenlimits (50 / 300), Ordnertiefe (4) und Beschreibungslänge (12 Wörter) sind einfach nur Zahlen — ändert sie nach dem Geschmack eures Teams. Wenn ihr das tut, aktualisiert auch die Self-Check-Liste in §11 der Protokolldatei, damit Regel und Check niemals auseinanderdriften.
 
 ---
 

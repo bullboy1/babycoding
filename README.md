@@ -59,6 +59,20 @@ Function tiers are assigned by **dependency direction**, not importance — and 
 - **L3 — business logic.** Carries a domain concept (user, order, invoice…), single responsibility.
 - **L4 — entry point.** Routes, CLI commands, orchestration.
 
+## v2: the infinite canvas
+
+FRP v1 fights duplicate code. v2 goes after the other AI-era failure mode: **humans losing their grip on what the project even is.** The canvas projects the registry onto an infinite board that a non-coder can read:
+
+- **One file = one card**, labeled in plain language (the registry's `desc` column). Signatures, paths and ref counts live in a click-away detail panel — pro data for the AI, plain words for the human.
+- **Edges = file-level dependencies.** Select a card and every wire it touches lights up: you see what you'd drag along *before* you change anything.
+- **A dashed "tools" box** auto-collects the reusable L1/L2 parts, straight from the protocol's tier system.
+- **Marquee-select + plain words = a ready-to-paste AI instruction.** Frame a few cards, type "give members a 5% discount", click once — the canvas compiles the selection into a complete prompt (exact paths, signatures, reusable dependencies, FRP constraints) and puts it on your clipboard.
+- **"What did the AI just touch?"** The end-of-task scan writes its added/changed/removed rows into `graph.json`; the canvas badges the touched cards, dots the touched functions (green = added, amber = changed), and a one-click chip selects them all. The AI does the work — you audit it at a glance.
+
+User-side, it's three steps: 1) drop the protocol file into your project; 2) the first time the agent creates `FUNCTIONS.md`, it asks ONCE whether you want the canvas (the answer lands in the registry header as `canvas:on/off` — you're never asked again); 3) if yes, the agent downloads the viewer **verbatim** into `docs/registry/canvas.html`. Double-click it, drop `docs/registry/graph.json` onto it (Stage 1: drop `FUNCTIONS.md`), done.
+
+UI consistency is a hard rule, not a hope: the viewer is a versioned, fixed artifact — [`dist/babycode-canvas.html`](dist/babycode-canvas.html), bundled from the `canvas/` source by `tools/build_canvas.js` — and protocol §10 forbids agents from generating, editing or "improving" it. Upgrading means re-downloading. Every AI, every project, the same canvas, pixel for pixel. All of this costs the protocol body about eight lines (v1.2).
+
 ## Compatible with
 
 FRP is just markdown, so it works with anything that can read a rules file. This repo ships the same protocol pre-formatted for every major tool's expected path:
@@ -137,8 +151,8 @@ Fixed cost per task ≈ the protocol body (~1k tokens) + the relevant registry s
 
 ## Tunable knobs
 
-Stage thresholds (30 / 200), line limits (50 / 300), folder depth (4), and description length (12 words) are all just numbers — change them to match your team's taste. If you do, update the self-check list in §10 of the protocol file too, so the rule and the check never drift apart.
+Stage thresholds (30 / 200), line limits (50 / 300), folder depth (4), and description length (12 words) are all just numbers — change them to match your team's taste. If you do, update the self-check list in §11 of the protocol file too, so the rule and the check never drift apart.
 
 ---
 
-<sub>Two files ship the substance: the protocol body (copy into your project) and this README (the explanation for humans). The scan script is deliberately *not* included — the agent writes it for your specific stack once you hit Stage 2, per the contract frozen into §7. That keeps the protocol stack-agnostic and makes the tooling itself part of what evolves.</sub>
+<sub>Three things ship the substance: the protocol body (copy into your project), this README, and [`dist/babycode-canvas.html`](dist/babycode-canvas.html) — the canvas viewer as a single fixed file (source in `canvas/`). The scan script is deliberately *not* included — the agent writes it for your specific stack once you hit Stage 2, per the contract frozen into §7; this repo's own `tools/scan_registry.js` doubles as a reference implementation. And this repo eats its own dog food: `FUNCTIONS.md`, `docs/registry/graph.json` and the tooling were all generated under the protocol — drop `docs/registry/graph.json` onto the canvas to see the canvas map itself.</sub>
