@@ -1,12 +1,9 @@
-// prompt.js — 指挥台：把画布选区编译成一条带精确上下文的 AI 指令（上下文编译器）
+// prompt.js — 指挥台：把画布选区编译成一条带精确上下文的 AI 指令（上下文编译器，模板走 i18n）
 
 // 选区 → 指令文本：范围、专业签名、可复用零件、FRP 约束一次说清
 function buildPrompt(graph, selectedPaths, instruction) {
   var sel = graph.files.filter(function (f) { return selectedPaths.indexOf(f.path) >= 0; });
-  var lines = [];
-  lines.push('【babycode 画布指令】先读项目根目录 CLAUDE.md（FRP 协议）并遵守：动手前查 FUNCTIONS.md，能复用不新写；最小 diff；结束前更新注册表。');
-  lines.push('');
-  lines.push('本次改造范围（用户在画布上框选的文件）：');
+  var lines = [t('pHeader'), '', t('pScope')];
   sel.forEach(function (f) {
     lines.push('- ' + f.path);
     f.functions.forEach(function (fn) {
@@ -16,18 +13,13 @@ function buildPrompt(graph, selectedPaths, instruction) {
   });
   var deps = collectDeps(graph, selectedPaths);
   if (deps.length) {
-    lines.push('');
-    lines.push('选区直接依赖的文件（优先复用，不在改造范围）：');
+    lines.push('', t('pDeps'));
     deps.forEach(function (f) {
       var names = f.functions.map(function (fn) { return fn.name; }).join(', ');
-      lines.push('- ' + f.path + '（' + names + '）');
+      lines.push('- ' + f.path + ' (' + names + ')');
     });
   }
-  lines.push('');
-  lines.push('用户需求：');
-  lines.push(instruction || '（用户未填写，先向用户确认需求再动手）');
-  lines.push('');
-  lines.push('约束：不改动范围外文件；tools（L1/L2）里已有的能力必须复用，不许重写。');
+  lines.push('', t('pNeed'), instruction || t('pNoNeed'), '', t('pRule'));
   return lines.join('\n');
 }
 

@@ -1,4 +1,4 @@
-# GEMINI.md — Function Registry Protocol (FRP) v1.2
+# GEMINI.md — Function Registry Protocol (FRP) v1.3
 
 Mandatory for every task in this repo.
 Goals: zero duplicate code, minimal token spend, clean layered architecture.
@@ -47,7 +47,7 @@ Goals: zero duplicate code, minimal token spend, clean layered architecture.
 |parseDate|L1|(s:str)->datetime|src/utils/time.py|4|ISO string to datetime|
 |fetchOrder|L3|(id:int)->Order|src/orders/api.py|2|load one order by id|
 ```
-- Pipe rows, NO alignment padding. desc ≤ 12 words, plain language a non-coder understands. refs = grep'd call-site count (`-` allowed in Stage 1).
+- Pipe rows, NO alignment padding. desc ≤ 12 words, plain language a non-coder understands (canvas on → write desc in the canvas language). refs = grep'd call-site count (`-` allowed in Stage 1).
 - Legacy rows may carry `-` for L/desc — lazy annotation: whoever next touches the function fills them in.
 
 ## 6. Bootstrap (no FUNCTIONS.md)
@@ -59,8 +59,9 @@ Goals: zero duplicate code, minimal token spend, clean layered architecture.
 - **Stage 1** (< 30 functions): manual upkeep, single file, no tooling.
 - **Stage 2** (30–200): write `tools/scan_registry` (≤ 150 lines; prefer the stack's AST, else universal-ctags, else regex).
   Contract: regenerate fact columns; PRESERVE manual L/desc values; print added/changed/removed rows; `--check` exits 1 when registry ≠ code.
-  Also regenerate `docs/registry/graph.json`: `{"files":[{path,module,functions:[registry rows]}],"edges":[{from,to}],"changes":{date,entries:[{path,name,kind:added|changed|removed}]}}`.
-  edges = file-level imports; changes = THIS scan's diff (keep previous when diff is empty) — the canvas uses it to highlight what the last task touched.
+  Also regenerate `docs/registry/graph.json` + `graph.js` (same object, wrapped as `window.BABYCODE_GRAPH = …;` so the canvas auto-loads it):
+  `{"meta":{project,lang},"files":[{path,module,functions:[registry rows, plus §4-skipped helpers flagged minor:true]}],"edges":[{from,to}],"changes":{date,entries:[{path,name,kind:added|changed|removed}]}}`.
+  edges = file-level imports; changes = THIS scan's diff (keep previous when empty) — the canvas highlights last-task changes; minor rows feed its detail toggle.
   At the end of every code-changing task: run it, then annotate only the printed rows.
 - **Stage 3** (> 200): shard to `docs/registry/<module>.md`; `FUNCTIONS.md` becomes the index `|module|path|count|`.
   Install a pre-commit hook running `tools/scan_registry --check`.
@@ -73,8 +74,9 @@ Goals: zero duplicate code, minimal token spend, clean layered architecture.
 - Do not echo file contents back into chat. A report = REGISTRY trace lines + a change summary of ≤ 5 lines.
 
 ## 10. Canvas (optional — always the user's choice)
-- The first time FUNCTIONS.md is created (or if the header lacks a canvas flag), ask the user ONCE: "Enable the visual project canvas? (a map of your project in plain language)". Record the answer in the FUNCTIONS.md header: `| canvas:on` or `| canvas:off`. Never ask again; the user may flip the flag anytime.
-- canvas:on → download the viewer VERBATIM to `docs/registry/canvas.html` from CANVAS_URL below (fetch failed / offline → ask the user to manually copy `dist/babycode-canvas.html` from the babycode repo). Then tell the user: double-click the file; Stage 1 = drop `FUNCTIONS.md` onto it, Stage 2+ = drop `docs/registry/graph.json`.
+- The first time FUNCTIONS.md is created (or the header lacks a canvas flag), ask the user ONCE: "Enable the visual project canvas? (a plain-language map of your project)" — and if yes, which display language. Record `| canvas:off` or `| canvas:<lang>` (e.g. `canvas:zh`, `canvas:en`) in the FUNCTIONS.md header. Never ask again; the user may flip it anytime.
+- canvas on → download the viewer VERBATIM to `docs/registry/canvas.html` from CANVAS_URL below (fetch failed / offline → ask the user to manually copy `dist/babycode-canvas.html` from the babycode repo). It auto-loads the `graph.js` sitting next to it — the user just double-clicks; no file picking.
+- canvas on → keep `docs/registry/graph.js` current at the end of every code-changing task (Stage 2+: the scan emits it; Stage 1: derive it from FUNCTIONS.md with edges:[]).
 - CANVAS_URL: https://raw.githubusercontent.com/bullboy1/babycoding/main/dist/babycode-canvas.html
 - The viewer is a FIXED versioned artifact — treat as vendored: NEVER generate, edit, restyle, or "improve" it, and never register it. Upgrade = re-download. This keeps the canvas UI identical across all AIs and all projects.
 

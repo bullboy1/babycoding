@@ -1,42 +1,55 @@
-# FUNCTIONS.md | stage:2 | count:40 | updated:2026-07-07 | canvas:on
+# FUNCTIONS.md | stage:2 | count:53 | updated:2026-07-09 | canvas:zh
 |name|L|signature|path|refs|desc|
 |applyView|L3|()|canvas/app.js|3|把平移缩放应用到画布|
 |screenToWorld|L2|(cx,cy)|canvas/app.js|2|屏幕坐标换算成画布坐标|
-|refresh|L3|()|canvas/app.js|3|重画卡片、连线和底部操作条|
-|setGraph|L3|(graph)|canvas/app.js|3|装入一张新项目图并重置视图|
-|fitView|L3|()|canvas/app.js|2|缩放平移到能看到整张图|
+|refresh|L3|()|canvas/app.js|9|重画卡片、连线和底部操作条|
+|setGraph|L3|(graph)|canvas/app.js|5|装入一张新项目图并重置视图|
+|fitView|L3|()|canvas/app.js|4|缩放平移到能看到整张图|
 |zoomAt|L3|(cx,cy,factor)|canvas/app.js|3|以某个点为中心缩放画布|
 |onDown|L4|(e)|canvas/app.js|1|按下鼠标：开始拖卡片或框选|
 |onMove|L4|(e)|canvas/app.js|1|移动鼠标：拖动卡片或画选框|
 |onUp|L4|(e)|canvas/app.js|1|松开鼠标：确定选区或落下卡片|
+|selectInRect|L3|(x1,y1,x2,y2,additive)|canvas/app.js|1|框选矩形内的卡片加入选区|
 |afterSelectionChange|L3|()|canvas/app.js|4|选区变化后刷新界面和详情|
 |loadText|L3|(name,text)|canvas/app.js|1|识别并载入 graph.json 或 FUNCTIONS.md|
 |readFile|L3|(file)|canvas/app.js|2|读取用户拖入或选择的文件|
 |onPrompt|L4|()|canvas/app.js|2|把选区和需求编译成指令并复制|
 |initApp|L4|()|canvas/app.js|1|入口：绑定所有按钮和鼠标事件|
+|demoGraph|L3|()|canvas/data.js|3|按当前语言取演示项目|
 |baseName|L1|(path)|canvas/data.js|2|取路径最后一段当卡片标题|
 |normalizeGraph|L3|(raw)|canvas/data.js|4|把原始数据统一成画布内部结构|
 |markChanges|L3|(files,entries)|canvas/data.js|1|把上次改动标记落到文件和函数上|
 |parseFunctionsMd|L3|(text)|canvas/data.js|1|把 FUNCTIONS.md 注册表解析成图|
-|computeLayout|L3|(graph)|canvas/layout.js|1|按层级自动排布卡片和 tools 框|
-|layoutBbox|L2|(positions,sizes,toolsBox)|canvas/layout.js|2|算所有卡片的外接矩形|
+|t|L1|(key)|canvas/i18n.js|33|取当前语言文案，支持参数替换|
+|pickLang|L1|(graphLang)|canvas/i18n.js|2|按优先级决定界面语言|
+|getLang|L1|()|canvas/i18n.js|3|返回当前界面语言|
+|visibleFns|L2|(file,showMinor)|canvas/layout.js|2|按细节开关过滤可见函数|
+|visibleFiles|L2|(graph,showMinor)|canvas/layout.js|2|按细节开关过滤可见文件|
+|computeLayout|L3|(graph,showMinor)|canvas/layout.js|3|按层级自动排布卡片和 tools 框|
+|layoutBbox|L2|(positions,sizes,toolsBox)|canvas/layout.js|3|算所有卡片的外接矩形|
 |edgePath|L2|(fromPos,fromSize,toPos,toSize)|canvas/layout.js|1|算两张卡片之间连线的曲线|
 |computeFit|L2|(bbox,viewW,viewH)|canvas/layout.js|1|算看全貌所需的缩放和位移|
 |buildPrompt|L3|(graph,selectedPaths,instruction)|canvas/prompt.js|1|选区加需求编译成给 AI 的完整指令|
 |collectDeps|L3|(graph,selectedPaths)|canvas/prompt.js|1|找出选区依赖的可复用文件|
 |copyFallback|L1|(text,done)|canvas/prompt.js|2|老浏览器的剪贴板复制兜底|
-|esc|L1|(s)|canvas/render.js|16|转义 HTML 特殊字符防注入|
-|cardHtml|L3|(file,pos,selected)|canvas/render.js|1|生成单张功能卡片的 HTML|
+|esc|L1|(s)|canvas/render.js|13|转义 HTML 特殊字符防注入|
+|cardHtml|L3|(file,pos,selected,showMinor)|canvas/render.js|1|生成单张功能卡片的 HTML|
 |edgesSvgHtml|L3|(graph,layout,selection)|canvas/render.js|2|生成全部连线，选区相关标红|
 |renderWorld|L3|(state)|canvas/render.js|1|全量重画整个画布世界|
-|renderDetail|L3|(file)|canvas/render.js|4|显示单个文件的专业详情面板|
-|showToast|L2|(msg)|canvas/render.js|5|弹出一条短暂的提示消息|
+|renderDetail|L3|(file)|canvas/render.js|5|显示单个文件的专业详情面板|
+|showToast|L2|(msg)|canvas/render.js|6|弹出一条短暂的提示消息|
+|initUi|L4|()|canvas/ui.js|1|入口：绑定语言、搜索、开关等控件|
+|updateChrome|L3|()|canvas/ui.js|3|把界面文案刷成当前语言|
+|posKey|L1|()|canvas/ui.js|3|当前项目的位置存储键名|
+|applySavedPositions|L3|()|canvas/ui.js|2|套用用户记住的卡片位置|
+|runSearch|L3|()|canvas/ui.js|2|搜索过滤：不匹配的卡片压暗|
+|fileByPath|L1|(p)|canvas/ui.js|2|按路径找到文件对象|
 |readSrc|L1|(f)|tools/build_canvas.js|3|读取 canvas 源文件文本|
 |inlineAssets|L3|(html)|tools/build_canvas.js|1|内联 CSS 和 JS，注入版本戳|
 |listSourceFiles|L1|()|tools/scan_registry.js|1|列出要扫描的源码文件|
 |parseFunctions|L3|(text)|tools/scan_registry.js|1|正则找出文件里的顶层函数|
 |buildRows|L3|(files)|tools/scan_registry.js|1|汇总函数事实，保留人工标注|
-|renderRegistry|L3|(rows,today,canvasFlag)|tools/scan_registry.js|2|把行渲染成 FUNCTIONS.md 文本|
-|buildGraph|L3|(files,rows,changes)|tools/scan_registry.js|1|生成画布用的 graph.json 结构|
+|renderRegistry|L3|(rows,today,flag)|tools/scan_registry.js|2|把行渲染成 FUNCTIONS.md 文本|
+|buildGraph|L3|(files,rows,changes,lang)|tools/scan_registry.js|1|生成画布用的 graph.json 结构|
 |diffRows|L3|(oldText,newText)|tools/scan_registry.js|1|对比新旧注册表，打印增删改|
 |main|L4|()|tools/scan_registry.js|1|入口：扫描，写注册表和图，或校验|

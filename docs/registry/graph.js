@@ -1,4 +1,4 @@
-{
+window.BABYCODE_GRAPH = {
  "meta": {
   "project": "babycoding",
   "stage": 2,
@@ -790,4 +790,4 @@
    }
   ]
  }
-}
+};

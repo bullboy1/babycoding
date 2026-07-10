@@ -1,30 +1,46 @@
-// layout.js — 布局层：卡片测量、分层排布、连线走向、适配视图（纯计算，可在 node 中测试）
+// layout.js — 布局层：自适应分层排布、模块聚类、tools 双列、连线走向、适配视图（纯计算，可测试）
 
 var CARD_W = 230;
 var GAP_X = 70;
 var GAP_Y = 90;
-var ROW_CAP = 4;
+var MAX_ROWS_SHOWN = 7;
 
-// 卡片高度 = 头部 + 每个函数一行；与 style.css 的行高保持一致
-function measureCard(file) {
-  return { w: CARD_W, h: 50 + file.functions.length * 30 };
+// 细节开关决定小函数是否可见
+function visibleFns(file, showMinor) {
+  return showMinor ? file.functions : file.functions.filter(function (fn) { return !fn.minor; });
 }
 
-// 流程区（L3/L4）按层分行，tools（L1/L2）靠右成竖列并框起来
-function computeLayout(graph) {
+function visibleFiles(graph, showMinor) {
+  return showMinor ? graph.files : graph.files.filter(function (f) { return !f.minorOnly; });
+}
+
+// 卡片高度随可见函数行数走；超过上限折叠成"还有 N 个"提示行
+function measureCard(file, showMinor) {
+  var n = visibleFns(file, showMinor).length;
+  var shown = Math.min(n, MAX_ROWS_SHOWN);
+  return { w: CARD_W, h: 50 + shown * 30 + (n > shown ? 26 : 0) };
+}
+
+// 流程区（L3/L4）按层分行、按模块聚类；tools（L1/L2）靠右成列并框起来
+function computeLayout(graph, showMinor) {
   var positions = {}, sizes = {};
-  graph.files.forEach(function (f) { sizes[f.path] = measureCard(f); });
-  var flow = graph.files.filter(function (f) { return !f.isTool; });
-  var tools = graph.files.filter(function (f) { return f.isTool; });
+  var files = visibleFiles(graph, showMinor);
+  files.forEach(function (f) { sizes[f.path] = measureCard(f, showMinor); });
+  var flow = files.filter(function (f) { return !f.isTool; });
+  var tools = files.filter(function (f) { return f.isTool; });
+  var byModule = function (a, b) {
+    return a.module === b.module ? (a.path < b.path ? -1 : 1) : (a.module < b.module ? -1 : 1);
+  };
+  var cap = Math.max(3, Math.min(6, Math.ceil(Math.sqrt(flow.length * 1.6))));
   var rows = [];
   ['L4', 'L3'].forEach(function (lv) {
-    var group = flow.filter(function (f) { return f.level === lv; });
-    for (var i = 0; i < group.length; i += ROW_CAP) rows.push(group.slice(i, i + ROW_CAP));
+    var group = flow.filter(function (f) { return f.level === lv; }).sort(byModule);
+    for (var i = 0; i < group.length; i += cap) rows.push(group.slice(i, i + cap));
   });
   var y = 40, flowRight = 0;
   rows.forEach(function (row) {
     var width = row.length * CARD_W + (row.length - 1) * GAP_X;
-    var x = Math.max(40, (ROW_CAP * CARD_W + (ROW_CAP - 1) * GAP_X - width) / 2 + 40);
+    var x = Math.max(40, (cap * CARD_W + (cap - 1) * GAP_X - width) / 2 + 40);
     var maxH = 0;
     row.forEach(function (f) {
       positions[f.path] = { x: x, y: y };
@@ -36,12 +52,18 @@ function computeLayout(graph) {
   });
   var toolsBox = null;
   if (tools.length) {
-    var tx = (flowRight || 40) + 110, ty = 40, boxBottom = ty;
-    tools.forEach(function (f) {
-      positions[f.path] = { x: tx + 24, y: boxBottom + 46 };
-      boxBottom = positions[f.path].y + sizes[f.path].h - 26;
+    tools.sort(byModule);
+    var cols = tools.length > 5 ? 2 : 1;
+    var tx = (flowRight || 40) + 110, ty = 40;
+    var colBottom = [];
+    for (var c = 0; c < cols; c++) colBottom[c] = ty + 20;
+    tools.forEach(function (f, i) {
+      var col = i % cols;
+      positions[f.path] = { x: tx + 24 + col * (CARD_W + 24), y: colBottom[col] + 26 };
+      colBottom[col] = positions[f.path].y + sizes[f.path].h - 6;
     });
-    toolsBox = { x: tx, y: ty, w: CARD_W + 48, h: boxBottom - ty + 50 };
+    var bottom = Math.max.apply(null, colBottom);
+    toolsBox = { x: tx, y: ty, w: cols * CARD_W + (cols - 1) * 24 + 48, h: bottom - ty + 30 };
   }
   return { positions: positions, sizes: sizes, toolsBox: toolsBox, bbox: layoutBbox(positions, sizes, toolsBox) };
 }

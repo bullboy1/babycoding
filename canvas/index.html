@@ -3,27 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>babycode 画布 — 看得懂的项目地图</title>
+<title>babycode canvas</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header id="topbar">
-  <div id="brand">babycode 画布<span id="meta"></span></div>
+  <div id="brand">babycode<span id="meta"></span></div>
   <div id="toolbar">
-    <button id="btn-open" title="打开 graph.json（阶段二）或 FUNCTIONS.md（阶段一）">打开项目数据</button>
-    <input type="file" id="file-input" accept=".json,.md,.txt" hidden>
-    <button id="btn-demo">演示项目</button>
-    <button id="btn-fit">看全貌</button>
-    <button id="btn-zoom-out" aria-label="缩小">−</button>
-    <button id="btn-zoom-in" aria-label="放大">＋</button>
+    <button id="btn-open" data-i18n="open"></button>
+    <input type="file" id="file-input" accept=".json,.md,.txt,.js" hidden>
+    <button id="btn-demo" data-i18n="demo"></button>
+    <button id="btn-fit" data-i18n="fit"></button>
+    <button id="btn-refresh" data-i18n="refresh"></button>
+    <button id="btn-relayout" data-i18n="relayout"></button>
+    <button id="btn-minor"></button>
+    <button id="btn-zoom-out" aria-label="zoom out">−</button>
+    <button id="btn-zoom-in" aria-label="zoom in">＋</button>
   </div>
 </header>
 <div id="legend">
-  <span><i class="sw sw-l4"></i>入口 / 流程</span>
-  <span><i class="sw sw-l3"></i>业务功能</span>
-  <span><i class="sw sw-tool"></i>tools 通用零件</span>
+  <span><i class="sw sw-l4"></i><span data-i18n="legendL4"></span></span>
+  <span><i class="sw sw-l3"></i><span data-i18n="legendL3"></span></span>
+  <span><i class="sw sw-tool"></i><span data-i18n="legendTools"></span></span>
   <button id="changes-chip" hidden></button>
-  <span class="hint">空白处拖拽 = 框选 · 拖动卡片 = 挪位置 · 滚轮 = 平移 · Ctrl/⌘ + 滚轮 = 缩放</span>
+  <span class="right">
+    <input id="search" type="search">
+    <select id="lang-select"><option value="zh">中文</option><option value="en">English</option></select>
+    <span id="help" class="help">?</span>
+  </span>
 </div>
 <main id="canvas">
   <div id="world">
@@ -31,19 +38,22 @@
     <div id="cards"></div>
   </div>
   <div id="marquee" hidden></div>
-  <div id="empty-tip" hidden>把 graph.json 或 FUNCTIONS.md 拖进来，就能看到你的项目地图</div>
+  <div id="empty-tip" hidden></div>
 </main>
 <aside id="detail" hidden></aside>
 <footer id="action-bar" hidden>
   <div id="sel-count"></div>
-  <textarea id="instruction" rows="2" placeholder="用大白话说想怎么改，例如：给会员价打个 95 折"></textarea>
-  <button id="btn-prompt">生成并复制 AI 指令</button>
+  <textarea id="instruction" rows="2"></textarea>
+  <button id="btn-prompt"></button>
 </footer>
 <div id="toast" hidden></div>
+<script src="graph.js"></script>
+<script src="i18n.js"></script>
 <script src="data.js"></script>
 <script src="layout.js"></script>
 <script src="prompt.js"></script>
 <script src="render.js"></script>
+<script src="ui.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
