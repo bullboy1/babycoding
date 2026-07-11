@@ -4,6 +4,7 @@ var I18N = {
   zh: {
     open: '打开项目数据', demo: '演示项目', fit: '看全貌', refresh: '刷新数据', relayout: '重新排版',
     searchPh: '搜索功能、文件…', minorShow: '显示小函数', minorHide: '隐藏小函数',
+    cardSmaller: '卡片缩小', cardBigger: '卡片放大', isoBand: '独立模块 · 暂无依赖连线', metaEdges: ' · {0} 条连线',
     legendL4: '入口 / 流程', legendL3: '业务功能', legendTools: 'tools 通用零件',
     hint: '空白处拖拽 = 框选 · 拖动卡片 = 挪位置 · 滚轮 = 平移 · Ctrl/⌘+滚轮 = 缩放',
     L4: '入口 / 流程', L3: '业务功能', L2: '通用零件', L1: '基础零件', 'L-': '待标注',
@@ -26,6 +27,7 @@ var I18N = {
   en: {
     open: 'Open project data', demo: 'Demo project', fit: 'Fit view', refresh: 'Reload data', relayout: 'Auto-arrange',
     searchPh: 'Search functions, files…', minorShow: 'Show small functions', minorHide: 'Hide small functions',
+    cardSmaller: 'Smaller cards', cardBigger: 'Bigger cards', isoBand: 'Standalone · no dependency links yet', metaEdges: ' · {0} links',
     legendL4: 'Entry / flow', legendL3: 'Business logic', legendTools: 'tools: reusable parts',
     hint: 'Drag empty space = select · Drag card = move · Wheel = pan · Ctrl/Cmd+wheel = zoom',
     L4: 'Entry / flow', L3: 'Business logic', L2: 'Shared part', L1: 'Basic part', 'L-': 'Unlabeled',

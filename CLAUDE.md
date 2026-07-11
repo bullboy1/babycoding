@@ -57,7 +57,7 @@ Goals: zero duplicate code, minimal token spend, clean layered architecture.
 
 ## 7. Stages — evolution thresholds
 - **Stage 1** (< 30 functions): manual upkeep, single file, no tooling.
-- **Stage 2** (30–200): write `tools/scan_registry` (≤ 150 lines; prefer the stack's AST, else universal-ctags, else regex).
+- **Stage 2** (30–200): write `tools/scan_registry` (≤ 250 lines; prefer the stack's AST, else universal-ctags, else regex).
   Contract: regenerate fact columns; PRESERVE manual L/desc values; print added/changed/removed rows; `--check` exits 1 when registry ≠ code.
   Also regenerate `docs/registry/graph.json` + `graph.js` (same object, wrapped as `window.BABYCODE_GRAPH = …;` so the canvas auto-loads it):
   `{"meta":{project,lang},"files":[{path,module,functions:[registry rows, plus §4-skipped helpers flagged minor:true]}],"edges":[{from,to}],"changes":{date,entries:[{path,name,kind:added|changed|removed}]}}`.

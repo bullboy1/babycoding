@@ -1,6 +1,7 @@
 // app.js — 交互层：启动装载、平移缩放、框选、拖卡片、载入数据、把选区变成指令
 
-var state = { graph: null, layout: null, sel: new Set(), view: { x: 0, y: 0, scale: 1 }, showMinor: false, isDemo: true };
+var state = { graph: null, layout: null, sel: new Set(), view: { x: 0, y: 0, scale: 1 },
+  showMinor: false, isDemo: true, cardScale: 1, focus: null };
 var gesture = null;
 
 function applyView() {
@@ -21,7 +22,7 @@ function refresh() {
 
 function setGraph(graph) {
   state.graph = graph;
-  state.layout = computeLayout(graph, state.showMinor);
+  state.layout = computeLayout(graph, state.showMinor, state.cardScale);
   applySavedPositions();
   state.sel = new Set();
   fitView();
@@ -167,8 +168,25 @@ function onPrompt() {
   });
 }
 
+// 鼠标悬停卡片时，即时点亮它的所有连线（只改 class，不重绘）
+function hoverEdges(e, on) {
+  var card = e.target.closest ? e.target.closest('.card') : null;
+  if (!card) return;
+  var p = card.getAttribute('data-path');
+  var paths = document.querySelectorAll('#edges path');
+  for (var i = 0; i < paths.length; i++) {
+    if (paths[i].getAttribute('data-from') === p || paths[i].getAttribute('data-to') === p) {
+      paths[i].classList.toggle('hover-hot', on);
+    }
+  }
+}
+
 function initApp() {
   try { state.showMinor = localStorage.getItem('babycode-minor') === '1'; } catch (e) { state.showMinor = false; }
+  try {
+    var sc = parseFloat(localStorage.getItem('babycode-scale'));
+    if (SCALE_STEPS.indexOf(sc) >= 0) state.cardScale = sc;
+  } catch (e) { state.cardScale = 1; }
   var boot = typeof window !== 'undefined' && window.BABYCODE_GRAPH ? window.BABYCODE_GRAPH : null;
   initLang(boot && boot.meta ? boot.meta.lang : null);
   var canvas = document.getElementById('canvas');
@@ -190,6 +208,11 @@ function initApp() {
   document.getElementById('instruction').addEventListener('keydown', function (e) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') onPrompt();
   });
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') renderDetail(null);
+  });
+  document.getElementById('cards').addEventListener('mouseover', function (e) { hoverEdges(e, true); });
+  document.getElementById('cards').addEventListener('mouseout', function (e) { hoverEdges(e, false); });
   window.addEventListener('dragover', function (e) { e.preventDefault(); document.body.classList.add('dropping'); });
   window.addEventListener('dragleave', function () { document.body.classList.remove('dropping'); });
   window.addEventListener('drop', function (e) {

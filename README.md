@@ -131,6 +131,7 @@ One function, one source of truth, zero "which one is canonical" debugging sessi
 - **Function ≤ 50 lines / file ≤ 300 lines / nesting ≤ 3**: models comply with hard numbers far more reliably than with adjectives like "keep it clean."
 - **Folder depth ≤ 4**: a deeper tree means more round-trips to locate a file — isolation should come from naming and responsibility, not from nesting.
 - **Rule of Three**: a wrong abstraction is more expensive than a duplicate. The second occurrence is tolerated; only the third forces extraction — this stops premature abstraction before it starts.
+- **Scanner ≤ 250 lines**: the v1.3 contract added edge extraction, graph output and change tracking to its duties — 250 is the honest ceiling for that job while still being too small for a mini-framework. Edge quality is what makes the canvas readable, so it earns the lines (prefer the stack's AST).
 - **Descriptions ≤ 12 words, no table padding, no full-file rewrites**: the registry itself is a fixed cost paid every session — every byte in it has to earn its place.
 - **The mandatory `REGISTRY:` trace line**: costs a dozen tokens, buys two things — a step that has to be said out loud is a step that's more likely to actually happen, and you can audit at a glance whether the model skipped it.
 
@@ -152,7 +153,7 @@ Fixed cost per task ≈ the protocol body (~1k tokens) + the relevant registry s
 
 ## Tunable knobs
 
-Stage thresholds (30 / 200), line limits (50 / 300), folder depth (4), and description length (12 words) are all just numbers — change them to match your team's taste. If you do, update the self-check list in §11 of the protocol file too, so the rule and the check never drift apart.
+Stage thresholds (30 / 200), line limits (50 / 300), the scanner budget (250), folder depth (4), and description length (12 words) are all just numbers — change them to match your team's taste. If you do, update the self-check list in §11 of the protocol file too, so the rule and the check never drift apart.
 
 ---
 

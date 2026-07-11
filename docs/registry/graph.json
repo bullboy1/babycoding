@@ -132,6 +132,13 @@
      "desc": "把选区和需求编译成指令并复制"
     },
     {
+     "name": "hoverEdges",
+     "level": "L3",
+     "signature": "(e,on)",
+     "refs": 2,
+     "desc": "悬停卡片时点亮它的所有连线"
+    },
+    {
      "name": "initApp",
      "level": "L4",
      "signature": "()",
@@ -205,7 +212,7 @@
      "name": "t",
      "level": "L1",
      "signature": "(key)",
-     "refs": 33,
+     "refs": 40,
      "desc": "取当前语言文案，支持参数替换"
     },
     {
@@ -261,15 +268,22 @@
     {
      "name": "measureCard",
      "level": "-",
-     "signature": "(file,showMinor)",
+     "signature": "(file,showMinor,scale)",
      "refs": 1,
      "desc": "-",
      "minor": true
     },
     {
+     "name": "placeRows",
+     "level": "L3",
+     "signature": "(group,cap,w,y,positions,sizes,state)",
+     "refs": 2,
+     "desc": "把一批卡片排成若干行"
+    },
+    {
      "name": "computeLayout",
      "level": "L3",
-     "signature": "(graph,showMinor)",
+     "signature": "(graph,showMinor,scale)",
      "refs": 3,
      "desc": "按层级自动排布卡片和 tools 框"
     },
@@ -339,23 +353,37 @@
      "name": "esc",
      "level": "L1",
      "signature": "(s)",
-     "refs": 13,
+     "refs": 16,
      "desc": "转义 HTML 特殊字符防注入"
+    },
+    {
+     "name": "modHue",
+     "level": "-",
+     "signature": "(module)",
+     "refs": 1,
+     "desc": "-",
+     "minor": true
+    },
+    {
+     "name": "focusSet",
+     "level": "L3",
+     "signature": "(graph,sel)",
+     "refs": 1,
+     "desc": "算出选区的邻居圈用于聚焦淡出"
     },
     {
      "name": "cardHtml",
      "level": "L3",
-     "signature": "(file,pos,selected,showMinor)",
+     "signature": "(file,pos,state)",
      "refs": 1,
      "desc": "生成单张功能卡片的 HTML"
     },
     {
-     "name": "toolsBoxHtml",
-     "level": "-",
-     "signature": "(box)",
+     "name": "labelsHtml",
+     "level": "L3",
+     "signature": "(layout)",
      "refs": 1,
-     "desc": "-",
-     "minor": true
+     "desc": "生成 tools 框、层带、独立带标签"
     },
     {
      "name": "edgesSvgHtml",
@@ -391,7 +419,7 @@
      "name": "renderDetail",
      "level": "L3",
      "signature": "(file)",
-     "refs": 5,
+     "refs": 6,
      "desc": "显示单个文件的专业详情面板"
     },
     {
@@ -421,6 +449,20 @@
      "signature": "()",
      "refs": 1,
      "desc": "入口：绑定语言、搜索、开关等控件"
+    },
+    {
+     "name": "setCardScale",
+     "level": "L3",
+     "signature": "(delta)",
+     "refs": 2,
+     "desc": "切换卡片缩放档位并记住"
+    },
+    {
+     "name": "relayout",
+     "level": "L3",
+     "signature": "()",
+     "refs": 5,
+     "desc": "重算布局并套用记住的位置"
     },
     {
      "name": "updateChrome",
@@ -593,7 +635,7 @@
      "name": "main",
      "level": "L4",
      "signature": "()",
-     "refs": 1,
+     "refs": 3,
      "desc": "入口：扫描，写注册表和图，或校验"
     }
    ]
@@ -633,6 +675,14 @@
    "to": "canvas/app.js"
   },
   {
+   "from": "canvas/i18n.js",
+   "to": "canvas/ui.js"
+  },
+  {
+   "from": "canvas/layout.js",
+   "to": "tools/scan_registry.js"
+  },
+  {
    "from": "canvas/prompt.js",
    "to": "canvas/i18n.js"
   },
@@ -666,56 +716,21 @@
   }
  ],
  "changes": {
-  "date": "2026-07-09",
+  "date": "2026-07-10",
   "entries": [
    {
-    "kind": "changed",
-    "name": "refresh",
-    "path": "canvas/app.js"
-   },
-   {
-    "kind": "changed",
-    "name": "setGraph",
+    "kind": "added",
+    "name": "hoverEdges",
     "path": "canvas/app.js"
    },
    {
     "kind": "changed",
-    "name": "fitView",
-    "path": "canvas/app.js"
-   },
-   {
-    "kind": "added",
-    "name": "selectInRect",
-    "path": "canvas/app.js"
-   },
-   {
-    "kind": "added",
-    "name": "demoGraph",
-    "path": "canvas/data.js"
-   },
-   {
-    "kind": "added",
     "name": "t",
     "path": "canvas/i18n.js"
    },
    {
     "kind": "added",
-    "name": "pickLang",
-    "path": "canvas/i18n.js"
-   },
-   {
-    "kind": "added",
-    "name": "getLang",
-    "path": "canvas/i18n.js"
-   },
-   {
-    "kind": "added",
-    "name": "visibleFns",
-    "path": "canvas/layout.js"
-   },
-   {
-    "kind": "added",
-    "name": "visibleFiles",
+    "name": "placeRows",
     "path": "canvas/layout.js"
    },
    {
@@ -725,12 +740,12 @@
    },
    {
     "kind": "changed",
-    "name": "layoutBbox",
-    "path": "canvas/layout.js"
+    "name": "esc",
+    "path": "canvas/render.js"
    },
    {
-    "kind": "changed",
-    "name": "esc",
+    "kind": "added",
+    "name": "focusSet",
     "path": "canvas/render.js"
    },
    {
@@ -739,53 +754,28 @@
     "path": "canvas/render.js"
    },
    {
+    "kind": "added",
+    "name": "labelsHtml",
+    "path": "canvas/render.js"
+   },
+   {
     "kind": "changed",
     "name": "renderDetail",
     "path": "canvas/render.js"
    },
    {
-    "kind": "changed",
-    "name": "showToast",
-    "path": "canvas/render.js"
-   },
-   {
     "kind": "added",
-    "name": "initUi",
+    "name": "setCardScale",
     "path": "canvas/ui.js"
    },
    {
     "kind": "added",
-    "name": "updateChrome",
-    "path": "canvas/ui.js"
-   },
-   {
-    "kind": "added",
-    "name": "posKey",
-    "path": "canvas/ui.js"
-   },
-   {
-    "kind": "added",
-    "name": "applySavedPositions",
-    "path": "canvas/ui.js"
-   },
-   {
-    "kind": "added",
-    "name": "runSearch",
-    "path": "canvas/ui.js"
-   },
-   {
-    "kind": "added",
-    "name": "fileByPath",
+    "name": "relayout",
     "path": "canvas/ui.js"
    },
    {
     "kind": "changed",
-    "name": "renderRegistry",
-    "path": "tools/scan_registry.js"
-   },
-   {
-    "kind": "changed",
-    "name": "buildGraph",
+    "name": "main",
     "path": "tools/scan_registry.js"
    }
   ]

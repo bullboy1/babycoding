@@ -1,4 +1,4 @@
-// layout.js — 布局层：自适应分层排布、模块聚类、tools 双列、连线走向、适配视图（纯计算，可测试）
+// layout.js — 布局层：分层排布、模块聚类、孤立带、卡片缩放、连线走向（纯计算，可测试）
 
 var CARD_W = 230;
 var GAP_X = 70;
@@ -14,58 +14,78 @@ function visibleFiles(graph, showMinor) {
   return showMinor ? graph.files : graph.files.filter(function (f) { return !f.minorOnly; });
 }
 
-// 卡片高度随可见函数行数走；超过上限折叠成"还有 N 个"提示行
-function measureCard(file, showMinor) {
+// 卡片尺寸随缩放档位与可见函数行数走；超过上限折叠成"还有 N 个"提示行
+function measureCard(file, showMinor, scale) {
+  var s = scale || 1;
   var n = visibleFns(file, showMinor).length;
   var shown = Math.min(n, MAX_ROWS_SHOWN);
-  return { w: CARD_W, h: 50 + shown * 30 + (n > shown ? 26 : 0) };
+  return { w: Math.round(CARD_W * s), h: Math.round((50 + shown * 30 + (n > shown ? 26 : 0)) * s) };
 }
 
-// 流程区（L3/L4）按层分行、按模块聚类；tools（L1/L2）靠右成列并框起来
-function computeLayout(graph, showMinor) {
-  var positions = {}, sizes = {};
+// 排一批卡片成若干行，返回新的 y；顺便记录本批第一行的位置给层带标签用
+function placeRows(group, cap, w, y, positions, sizes, state) {
+  for (var i = 0; i < group.length; i += cap) {
+    var row = group.slice(i, i + cap);
+    var width = row.length * w + (row.length - 1) * GAP_X;
+    var x = Math.max(40, (cap * w + (cap - 1) * GAP_X - width) / 2 + 40);
+    var maxH = 0;
+    row.forEach(function (f) {
+      positions[f.path] = { x: x, y: y };
+      x += w + GAP_X;
+      if (sizes[f.path].h > maxH) maxH = sizes[f.path].h;
+    });
+    if (x - GAP_X > state.right) state.right = x - GAP_X;
+    y += maxH + GAP_Y;
+  }
+  return y;
+}
+
+// 流程区：有连线的按 L4/L3 分行；真正孤立的文件单独一条"独立模块"带；tools 靠右装框
+function computeLayout(graph, showMinor, scale) {
+  var positions = {}, sizes = {}, bands = [], isoLabel = null;
   var files = visibleFiles(graph, showMinor);
-  files.forEach(function (f) { sizes[f.path] = measureCard(f, showMinor); });
+  files.forEach(function (f) { sizes[f.path] = measureCard(f, showMinor, scale); });
+  var w = Math.round(CARD_W * (scale || 1));
   var flow = files.filter(function (f) { return !f.isTool; });
   var tools = files.filter(function (f) { return f.isTool; });
   var byModule = function (a, b) {
     return a.module === b.module ? (a.path < b.path ? -1 : 1) : (a.module < b.module ? -1 : 1);
   };
+  var linked = {};
+  graph.edges.forEach(function (e) { linked[e.from] = 1; linked[e.to] = 1; });
+  var hasEdges = graph.edges.length > 0;
+  var main = hasEdges ? flow.filter(function (f) { return linked[f.path]; }) : flow;
+  var orphans = hasEdges ? flow.filter(function (f) { return !linked[f.path]; }) : [];
   var cap = Math.max(3, Math.min(6, Math.ceil(Math.sqrt(flow.length * 1.6))));
-  var rows = [];
+  var st = { right: 0 };
+  var y = 40;
   ['L4', 'L3'].forEach(function (lv) {
-    var group = flow.filter(function (f) { return f.level === lv; }).sort(byModule);
-    for (var i = 0; i < group.length; i += cap) rows.push(group.slice(i, i + cap));
+    var group = main.filter(function (f) { return f.level === lv; }).sort(byModule);
+    if (!group.length) return;
+    bands.push({ key: lv, x: 44, y: y - 26 });
+    y = placeRows(group, cap, w, y, positions, sizes, st);
   });
-  var y = 40, flowRight = 0;
-  rows.forEach(function (row) {
-    var width = row.length * CARD_W + (row.length - 1) * GAP_X;
-    var x = Math.max(40, (cap * CARD_W + (cap - 1) * GAP_X - width) / 2 + 40);
-    var maxH = 0;
-    row.forEach(function (f) {
-      positions[f.path] = { x: x, y: y };
-      x += CARD_W + GAP_X;
-      if (sizes[f.path].h > maxH) maxH = sizes[f.path].h;
-    });
-    if (x - GAP_X > flowRight) flowRight = x - GAP_X;
-    y += maxH + GAP_Y;
-  });
+  if (orphans.length) {
+    y += 34;
+    isoLabel = { x: 44, y: y - 26 };
+    y = placeRows(orphans.sort(byModule), cap, w, y, positions, sizes, st);
+  }
   var toolsBox = null;
   if (tools.length) {
     tools.sort(byModule);
     var cols = tools.length > 5 ? 2 : 1;
-    var tx = (flowRight || 40) + 110, ty = 40;
+    var tx = (st.right || 40) + 110, ty = 40;
     var colBottom = [];
     for (var c = 0; c < cols; c++) colBottom[c] = ty + 20;
     tools.forEach(function (f, i) {
       var col = i % cols;
-      positions[f.path] = { x: tx + 24 + col * (CARD_W + 24), y: colBottom[col] + 26 };
+      positions[f.path] = { x: tx + 24 + col * (w + 24), y: colBottom[col] + 26 };
       colBottom[col] = positions[f.path].y + sizes[f.path].h - 6;
     });
-    var bottom = Math.max.apply(null, colBottom);
-    toolsBox = { x: tx, y: ty, w: cols * CARD_W + (cols - 1) * 24 + 48, h: bottom - ty + 30 };
+    toolsBox = { x: tx, y: ty, w: cols * w + (cols - 1) * 24 + 48, h: Math.max.apply(null, colBottom) - ty + 30 };
   }
-  return { positions: positions, sizes: sizes, toolsBox: toolsBox, bbox: layoutBbox(positions, sizes, toolsBox) };
+  return { positions: positions, sizes: sizes, toolsBox: toolsBox, bands: bands, isoLabel: isoLabel,
+    bbox: layoutBbox(positions, sizes, toolsBox) };
 }
 
 // 全部卡片 + tools 框的外接矩形，用于"看全貌"

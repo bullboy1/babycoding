@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- babycode-canvas v2.2.0 | fixed artifact: do not edit or let an AI regenerate it; upgrade = re-download -->
+<!-- babycode-canvas v2.3.0 | fixed artifact: do not edit or let an AI regenerate it; upgrade = re-download -->
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
@@ -45,10 +45,6 @@ button:active { transform: scale(0.98); }
 #search:focus { border-color: var(--clay); }
 #lang-select { font-family: var(--font); font-size: 12px; border: 1px solid var(--line-2); border-radius: 8px; padding: 4px 6px; background: var(--card); color: var(--ink); }
 .help { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line-2); color: var(--ink-3); font-size: 12px; cursor: help; }
-.card.dim { opacity: 0.22; }
-.fn-desc.minor { color: var(--ink-3); }
-.fn-more { color: var(--ink-3); font-style: italic; }
-.minor-tag { font-size: 10px; color: var(--ink-3); border: 1px solid var(--line); border-radius: 999px; padding: 0 6px; }
 .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
 .sw-l4 { background: var(--blue-soft); border: 1px solid var(--blue); }
 .sw-l3 { background: var(--card); border: 1px solid var(--line-2); }
@@ -59,40 +55,54 @@ button:active { transform: scale(0.98); }
 #edges { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
 #edges path { fill: none; stroke: var(--line-2); stroke-width: 1.6; }
 #edges path.hot { stroke: var(--clay); stroke-width: 2; }
+#edges path.faded { opacity: 0.18; }
+#edges path.hover-hot { stroke: var(--clay); stroke-width: 2; opacity: 1; }
 #cards { position: absolute; left: 0; top: 0; }
 
-.card { position: absolute; width: 230px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 1px 3px rgba(60, 50, 30, 0.06); cursor: grab; user-select: none; }
+.card { position: absolute; background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 1px 3px rgba(60, 50, 30, 0.06); cursor: grab; user-select: none; font-size: 13px; }
 .card:hover { border-color: var(--line-2); }
 .card.selected { border: 2px solid var(--clay); box-shadow: 0 2px 8px rgba(217, 119, 87, 0.25); }
 .card.changed { border-color: var(--amber); }
-.badge-changed { float: right; font-size: 10px; color: var(--amber-deep); background: var(--amber-soft); border: 1px solid var(--amber); border-radius: 999px; padding: 1px 7px; margin: 1px 0 0 6px; }
-.fn-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
-.fn-dot.added { background: var(--green); }
-.fn-dot.changed { background: var(--amber); }
-.card-head { padding: 9px 12px 7px; border-bottom: 1px solid var(--line); border-radius: 11px 11px 0 0; }
+.card.faded { opacity: 0.3; }
+.card.dim { opacity: 0.22; }
+.badge-changed { float: right; font-size: 0.77em; color: var(--amber-deep); background: var(--amber-soft); border: 1px solid var(--amber); border-radius: 999px; padding: 1px 7px; margin: 1px 0 0 6px; }
+.card-head { padding: 0.69em 0.92em 0.54em; border-bottom: 1px solid var(--line); border-radius: 11px 11px 0 0; }
 .card.l4 .card-head { background: var(--blue-soft); }
-.card-title { font-size: 13px; font-weight: 600; }
+.card-title { font-size: 1em; font-weight: 600; }
 .card.l4 .card-title { color: var(--blue); }
-.card-sub { font-size: 11px; color: var(--ink-3); font-family: var(--mono); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.fn-row { display: flex; justify-content: space-between; gap: 8px; padding: 6px 12px; font-size: 12px; border-top: 1px solid #f1eee6; }
+.card-sub { font-size: 0.85em; color: var(--ink-3); font-family: var(--mono); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mod-dot { display: inline-block; width: 0.54em; height: 0.54em; border-radius: 2px; margin-right: 5px; }
+.fn-row { display: flex; justify-content: space-between; gap: 8px; padding: 0.46em 0.92em; font-size: 0.92em; border-top: 1px solid #f1eee6; }
 .fn-row:first-of-type { border-top: none; }
 .fn-desc { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fn-desc.blank { color: var(--ink-3); font-style: italic; }
-.fn-refs { color: var(--ink-3); font-size: 11px; flex-shrink: 0; }
+.fn-desc.minor { color: var(--ink-3); }
+.fn-more { color: var(--ink-3); font-style: italic; }
+.fn-refs { color: var(--ink-3); font-size: 0.88em; flex-shrink: 0; }
+.fn-dot { display: inline-block; width: 0.54em; height: 0.54em; border-radius: 50%; margin-right: 6px; }
+.fn-dot.added { background: var(--green); }
+.fn-dot.changed { background: var(--amber); }
 
 #tools-box { position: absolute; border: 1.5px dashed var(--ink-3); border-radius: 16px; pointer-events: none; }
-#tools-label { position: absolute; font-size: 12px; font-weight: 600; color: var(--ink-2); background: var(--paper); padding: 0 8px; }
+.band-label { position: absolute; font-size: 12px; font-weight: 600; color: var(--ink-3); background: var(--paper); padding: 0 8px; pointer-events: none; }
+.band-label.iso { color: var(--amber-deep); }
+.minor-tag { font-size: 10px; color: var(--ink-3); border: 1px solid var(--line); border-radius: 999px; padding: 0 6px; }
 
 #marquee { position: absolute; border: 1.5px dashed var(--clay); background: rgba(217, 119, 87, 0.07); border-radius: 6px; pointer-events: none; }
 #empty-tip { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 14px; color: var(--ink-3); }
 
-#detail { position: absolute; left: 16px; bottom: 78px; width: 340px; max-height: 45%; overflow: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 16px rgba(60, 50, 30, 0.12); padding: 12px 14px; font-size: 12px; z-index: 5; }
-#detail h3 { font-size: 13px; margin-bottom: 2px; }
-#detail .d-path { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin-bottom: 8px; word-break: break-all; }
-#detail table { width: 100%; border-collapse: collapse; }
-#detail td { padding: 4px 6px 4px 0; border-top: 1px solid #f1eee6; vertical-align: top; }
-#detail td.mono { font-family: var(--mono); font-size: 11px; color: var(--ink-2); white-space: nowrap; }
-#detail .d-note { margin-top: 8px; color: var(--ink-3); }
+#detail { position: absolute; left: 16px; bottom: 78px; width: 460px; max-width: 44vw; max-height: 62vh; overflow: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 16px rgba(60, 50, 30, 0.12); padding: 14px 16px; font-size: 12px; z-index: 5; }
+#detail h3 { font-size: 14px; margin-bottom: 2px; padding-right: 24px; }
+#detail .d-path { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin-bottom: 6px; word-break: break-all; }
+.d-fn { border-top: 1px solid #f1eee6; padding: 8px 0; }
+.d-fn-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.d-name { font-family: var(--mono); font-size: 12.5px; font-weight: 600; word-break: break-all; }
+.d-lv { font-size: 10px; color: var(--ink-2); border: 1px solid var(--line-2); border-radius: 999px; padding: 0 6px; }
+.d-refs { font-size: 11px; color: var(--ink-3); margin-left: auto; white-space: nowrap; }
+.d-sig { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); margin-top: 3px; word-break: break-all; white-space: pre-wrap; }
+.d-desc { font-size: 12.5px; margin-top: 3px; line-height: 1.5; }
+.d-desc.blank { color: var(--ink-3); font-style: italic; }
+#detail .d-note { margin-top: 10px; color: var(--ink-3); }
 #detail .d-close { position: absolute; right: 8px; top: 8px; border: none; background: none; font-size: 14px; color: var(--ink-3); padding: 2px 6px; }
 
 #action-bar { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--line-2); border-radius: 14px; box-shadow: 0 6px 20px rgba(60, 50, 30, 0.15); padding: 10px 12px; width: min(640px, 92vw); z-index: 6; }
@@ -117,6 +127,8 @@ body.dropping #canvas { outline: 3px dashed var(--clay); outline-offset: -6px; }
     <button id="btn-refresh" data-i18n="refresh"></button>
     <button id="btn-relayout" data-i18n="relayout"></button>
     <button id="btn-minor"></button>
+    <button id="btn-card-minus" aria-label="smaller cards">A−</button>
+    <button id="btn-card-plus" aria-label="bigger cards">A+</button>
     <button id="btn-zoom-out" aria-label="zoom out">−</button>
     <button id="btn-zoom-in" aria-label="zoom in">＋</button>
   </div>
@@ -155,6 +167,7 @@ var I18N = {
   zh: {
     open: '打开项目数据', demo: '演示项目', fit: '看全貌', refresh: '刷新数据', relayout: '重新排版',
     searchPh: '搜索功能、文件…', minorShow: '显示小函数', minorHide: '隐藏小函数',
+    cardSmaller: '卡片缩小', cardBigger: '卡片放大', isoBand: '独立模块 · 暂无依赖连线', metaEdges: ' · {0} 条连线',
     legendL4: '入口 / 流程', legendL3: '业务功能', legendTools: 'tools 通用零件',
     hint: '空白处拖拽 = 框选 · 拖动卡片 = 挪位置 · 滚轮 = 平移 · Ctrl/⌘+滚轮 = 缩放',
     L4: '入口 / 流程', L3: '业务功能', L2: '通用零件', L1: '基础零件', 'L-': '待标注',
@@ -177,6 +190,7 @@ var I18N = {
   en: {
     open: 'Open project data', demo: 'Demo project', fit: 'Fit view', refresh: 'Reload data', relayout: 'Auto-arrange',
     searchPh: 'Search functions, files…', minorShow: 'Show small functions', minorHide: 'Hide small functions',
+    cardSmaller: 'Smaller cards', cardBigger: 'Bigger cards', isoBand: 'Standalone · no dependency links yet', metaEdges: ' · {0} links',
     legendL4: 'Entry / flow', legendL3: 'Business logic', legendTools: 'tools: reusable parts',
     hint: 'Drag empty space = select · Drag card = move · Wheel = pan · Ctrl/Cmd+wheel = zoom',
     L4: 'Entry / flow', L3: 'Business logic', L2: 'Shared part', L1: 'Basic part', 'L-': 'Unlabeled',
@@ -398,7 +412,7 @@ function parseFunctionsMd(text) {
   return normalizeGraph({ meta: meta, files: files, edges: [] });
 }
 
-// layout.js — 布局层：自适应分层排布、模块聚类、tools 双列、连线走向、适配视图（纯计算，可测试）
+// layout.js — 布局层：分层排布、模块聚类、孤立带、卡片缩放、连线走向（纯计算，可测试）
 
 var CARD_W = 230;
 var GAP_X = 70;
@@ -414,58 +428,78 @@ function visibleFiles(graph, showMinor) {
   return showMinor ? graph.files : graph.files.filter(function (f) { return !f.minorOnly; });
 }
 
-// 卡片高度随可见函数行数走；超过上限折叠成"还有 N 个"提示行
-function measureCard(file, showMinor) {
+// 卡片尺寸随缩放档位与可见函数行数走；超过上限折叠成"还有 N 个"提示行
+function measureCard(file, showMinor, scale) {
+  var s = scale || 1;
   var n = visibleFns(file, showMinor).length;
   var shown = Math.min(n, MAX_ROWS_SHOWN);
-  return { w: CARD_W, h: 50 + shown * 30 + (n > shown ? 26 : 0) };
+  return { w: Math.round(CARD_W * s), h: Math.round((50 + shown * 30 + (n > shown ? 26 : 0)) * s) };
 }
 
-// 流程区（L3/L4）按层分行、按模块聚类；tools（L1/L2）靠右成列并框起来
-function computeLayout(graph, showMinor) {
-  var positions = {}, sizes = {};
+// 排一批卡片成若干行，返回新的 y；顺便记录本批第一行的位置给层带标签用
+function placeRows(group, cap, w, y, positions, sizes, state) {
+  for (var i = 0; i < group.length; i += cap) {
+    var row = group.slice(i, i + cap);
+    var width = row.length * w + (row.length - 1) * GAP_X;
+    var x = Math.max(40, (cap * w + (cap - 1) * GAP_X - width) / 2 + 40);
+    var maxH = 0;
+    row.forEach(function (f) {
+      positions[f.path] = { x: x, y: y };
+      x += w + GAP_X;
+      if (sizes[f.path].h > maxH) maxH = sizes[f.path].h;
+    });
+    if (x - GAP_X > state.right) state.right = x - GAP_X;
+    y += maxH + GAP_Y;
+  }
+  return y;
+}
+
+// 流程区：有连线的按 L4/L3 分行；真正孤立的文件单独一条"独立模块"带；tools 靠右装框
+function computeLayout(graph, showMinor, scale) {
+  var positions = {}, sizes = {}, bands = [], isoLabel = null;
   var files = visibleFiles(graph, showMinor);
-  files.forEach(function (f) { sizes[f.path] = measureCard(f, showMinor); });
+  files.forEach(function (f) { sizes[f.path] = measureCard(f, showMinor, scale); });
+  var w = Math.round(CARD_W * (scale || 1));
   var flow = files.filter(function (f) { return !f.isTool; });
   var tools = files.filter(function (f) { return f.isTool; });
   var byModule = function (a, b) {
     return a.module === b.module ? (a.path < b.path ? -1 : 1) : (a.module < b.module ? -1 : 1);
   };
+  var linked = {};
+  graph.edges.forEach(function (e) { linked[e.from] = 1; linked[e.to] = 1; });
+  var hasEdges = graph.edges.length > 0;
+  var main = hasEdges ? flow.filter(function (f) { return linked[f.path]; }) : flow;
+  var orphans = hasEdges ? flow.filter(function (f) { return !linked[f.path]; }) : [];
   var cap = Math.max(3, Math.min(6, Math.ceil(Math.sqrt(flow.length * 1.6))));
-  var rows = [];
+  var st = { right: 0 };
+  var y = 40;
   ['L4', 'L3'].forEach(function (lv) {
-    var group = flow.filter(function (f) { return f.level === lv; }).sort(byModule);
-    for (var i = 0; i < group.length; i += cap) rows.push(group.slice(i, i + cap));
+    var group = main.filter(function (f) { return f.level === lv; }).sort(byModule);
+    if (!group.length) return;
+    bands.push({ key: lv, x: 44, y: y - 26 });
+    y = placeRows(group, cap, w, y, positions, sizes, st);
   });
-  var y = 40, flowRight = 0;
-  rows.forEach(function (row) {
-    var width = row.length * CARD_W + (row.length - 1) * GAP_X;
-    var x = Math.max(40, (cap * CARD_W + (cap - 1) * GAP_X - width) / 2 + 40);
-    var maxH = 0;
-    row.forEach(function (f) {
-      positions[f.path] = { x: x, y: y };
-      x += CARD_W + GAP_X;
-      if (sizes[f.path].h > maxH) maxH = sizes[f.path].h;
-    });
-    if (x - GAP_X > flowRight) flowRight = x - GAP_X;
-    y += maxH + GAP_Y;
-  });
+  if (orphans.length) {
+    y += 34;
+    isoLabel = { x: 44, y: y - 26 };
+    y = placeRows(orphans.sort(byModule), cap, w, y, positions, sizes, st);
+  }
   var toolsBox = null;
   if (tools.length) {
     tools.sort(byModule);
     var cols = tools.length > 5 ? 2 : 1;
-    var tx = (flowRight || 40) + 110, ty = 40;
+    var tx = (st.right || 40) + 110, ty = 40;
     var colBottom = [];
     for (var c = 0; c < cols; c++) colBottom[c] = ty + 20;
     tools.forEach(function (f, i) {
       var col = i % cols;
-      positions[f.path] = { x: tx + 24 + col * (CARD_W + 24), y: colBottom[col] + 26 };
+      positions[f.path] = { x: tx + 24 + col * (w + 24), y: colBottom[col] + 26 };
       colBottom[col] = positions[f.path].y + sizes[f.path].h - 6;
     });
-    var bottom = Math.max.apply(null, colBottom);
-    toolsBox = { x: tx, y: ty, w: cols * CARD_W + (cols - 1) * 24 + 48, h: bottom - ty + 30 };
+    toolsBox = { x: tx, y: ty, w: cols * w + (cols - 1) * 24 + 48, h: Math.max.apply(null, colBottom) - ty + 30 };
   }
-  return { positions: positions, sizes: sizes, toolsBox: toolsBox, bbox: layoutBbox(positions, sizes, toolsBox) };
+  return { positions: positions, sizes: sizes, toolsBox: toolsBox, bands: bands, isoLabel: isoLabel,
+    bbox: layoutBbox(positions, sizes, toolsBox) };
 }
 
 // 全部卡片 + tools 框的外接矩形，用于"看全貌"
@@ -581,15 +615,35 @@ function copyFallback(text, done) {
   done(ok);
 }
 
-// render.js — 渲染层：把 graph + layout 画成卡片、连线、tools 框、详情面板（文案全部走 i18n）
+// render.js — 渲染层：卡片、带箭头的连线、聚焦淡出、层带标签、块式详情面板（文案全部走 i18n）
 
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// 单张卡片：标题给人看，函数行 = 白话描述 + 引用数 + 改动圆点；超长折叠
-function cardHtml(file, pos, selected, showMinor) {
-  var fns = visibleFns(file, showMinor);
+// 模块名 → 稳定的颜色，帮人一眼把同模块的卡片归为一组
+function modHue(module) {
+  var h = 0;
+  for (var i = 0; i < module.length; i++) h = (h * 31 + module.charCodeAt(i)) % 360;
+  return h;
+}
+
+// 选区的"邻居圈"：选中的 + 与之直接相连的；其余卡片淡出
+function focusSet(graph, sel) {
+  if (!sel.size) return null;
+  var set = {};
+  sel.forEach(function (p) { set[p] = 1; });
+  graph.edges.forEach(function (e) {
+    if (sel.has(e.from)) set[e.to] = 1;
+    if (sel.has(e.to)) set[e.from] = 1;
+  });
+  return set;
+}
+
+// 单张卡片：标题给人看，函数行 = 白话 + 引用数 + 改动圆点；宽度字号随缩放档位
+function cardHtml(file, pos, state) {
+  var scale = state.cardScale || 1;
+  var fns = visibleFns(file, state.showMinor);
   var shown = fns.slice(0, MAX_ROWS_SHOWN);
   var rows = shown.map(function (fn) {
     var d = fn.desc ? esc(fn.desc) : t('noDesc');
@@ -601,39 +655,58 @@ function cardHtml(file, pos, selected, showMinor) {
       '</span><span class="fn-refs">' + refs + '</span></div>';
   }).join('');
   if (fns.length > shown.length) rows += '<div class="fn-row fn-more">' + t('moreRows', fns.length - shown.length) + '</div>';
-  var cls = 'card ' + file.level.toLowerCase() + (selected ? ' selected' : '') + (file.changed ? ' changed' : '');
+  var cls = 'card ' + file.level.toLowerCase() + (state.sel.has(file.path) ? ' selected' : '') +
+    (file.changed ? ' changed' : '') + (state.focus && !state.focus[file.path] ? ' faded' : '');
   var badge = file.changed ? '<span class="badge-changed">' + t('changedBadge') + '</span>' : '';
-  var levelWord = t(LEVEL_RANK[file.level] ? file.level : 'L-');
-  return '<div class="' + cls + '" data-path="' + esc(file.path) + '" style="left:' + pos.x + 'px;top:' + pos.y + 'px">' +
+  var lvWord = t(LEVEL_RANK[file.level] ? file.level : 'L-');
+  var dot = '<i class="mod-dot" style="background:hsl(' + modHue(file.module) + ',45%,52%)"></i>';
+  var size = 'width:' + Math.round(CARD_W * scale) + 'px;font-size:' + (13 * scale).toFixed(1) + 'px';
+  return '<div class="' + cls + '" data-path="' + esc(file.path) + '" style="left:' + pos.x + 'px;top:' + pos.y + 'px;' + size + '">' +
     '<div class="card-head">' + badge + '<div class="card-title">' + esc(file.name) + '</div>' +
-    '<div class="card-sub">' + esc(file.module) + ' · ' + levelWord + '</div></div>' + rows + '</div>';
+    '<div class="card-sub">' + dot + esc(file.module) + ' · ' + lvWord + '</div></div>' + rows + '</div>';
 }
 
-// tools 虚线框 + 标签（在画布坐标系内，跟随缩放平移）
-function toolsBoxHtml(box) {
-  if (!box) return '';
-  return '<div id="tools-box" style="left:' + box.x + 'px;top:' + box.y + 'px;width:' + box.w + 'px;height:' + box.h + 'px"></div>' +
-    '<div id="tools-label" style="left:' + (box.x + 16) + 'px;top:' + (box.y - 8) + 'px">' + t('toolsBox') + '</div>';
+// tools 虚线框、层带标签、孤立带标签（都在画布坐标系内，跟随缩放平移）
+function labelsHtml(layout) {
+  var html = '';
+  if (layout.toolsBox) {
+    var b = layout.toolsBox;
+    html += '<div id="tools-box" style="left:' + b.x + 'px;top:' + b.y + 'px;width:' + b.w + 'px;height:' + b.h + 'px"></div>' +
+      '<div class="band-label" style="left:' + (b.x + 16) + 'px;top:' + (b.y - 8) + 'px">' + t('toolsBox') + '</div>';
+  }
+  layout.bands.forEach(function (band) {
+    html += '<div class="band-label" style="left:' + band.x + 'px;top:' + band.y + 'px">' + t(band.key) + '</div>';
+  });
+  if (layout.isoLabel) {
+    html += '<div class="band-label iso" style="left:' + layout.isoLabel.x + 'px;top:' + layout.isoLabel.y + 'px">' + t('isoBand') + '</div>';
+  }
+  return html;
 }
 
-// 连线整体重画；与选区相连的线标红，帮人看清"动这里会牵扯谁"
+// 连线整体重画：方向箭头 + 选区相关标红 + 无关线淡出
 function edgesSvgHtml(graph, layout, selection) {
-  return graph.edges.map(function (e) {
+  var defs = '<defs>' +
+    '<marker id="arw" viewBox="0 0 8 8" refX="7.2" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><polygon points="0,0 8,4 0,8" fill="#cfcaba"/></marker>' +
+    '<marker id="arw-hot" viewBox="0 0 8 8" refX="7.2" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><polygon points="0,0 8,4 0,8" fill="#d97757"/></marker></defs>';
+  return defs + graph.edges.map(function (e) {
     var fp = layout.positions[e.from], tp = layout.positions[e.to];
     if (!fp || !tp) return '';
     var hot = selection.has(e.from) || selection.has(e.to);
+    var cls = hot ? 'hot' : (selection.size ? 'faded' : '');
     var d = edgePath(fp, layout.sizes[e.from], tp, layout.sizes[e.to]);
-    return '<path class="' + (hot ? 'hot' : '') + '" d="' + d + '"/>';
+    return '<path class="' + cls + '" data-from="' + esc(e.from) + '" data-to="' + esc(e.to) + '" d="' + d +
+      '" marker-end="url(#' + (hot ? 'arw-hot' : 'arw') + ')"/>';
   }).join('');
 }
 
 // 全量重绘世界（小图足够快，逻辑简单不出错）
 function renderWorld(state) {
   var g = state.graph, l = state.layout;
-  var html = toolsBoxHtml(l.toolsBox);
+  state.focus = focusSet(g, state.sel);
+  var html = labelsHtml(l);
   g.files.forEach(function (f) {
     var pos = l.positions[f.path];
-    if (pos) html += cardHtml(f, pos, state.sel.has(f.path), state.showMinor);
+    if (pos) html += cardHtml(f, pos, state);
   });
   document.getElementById('cards').innerHTML = html;
   var svg = document.getElementById('edges');
@@ -645,13 +718,13 @@ function renderWorld(state) {
   renderChangesChip(g);
 }
 
-// 顶栏摘要：项目名 + 功能块数 + 功能数 + 小函数折叠情况
+// 顶栏摘要：项目名 + 功能块数 + 功能数 + 连线数 + 小函数折叠情况
 function metaText(state) {
   var g = state.graph, all = 0, minor = 0;
   g.files.forEach(function (f) { f.functions.forEach(function (fn) { all++; if (fn.minor) minor++; }); });
   var s = t('metaLine', g.meta.project || t('unnamed'), visibleFiles(g, state.showMinor).length, all - minor);
   if (minor) s += t(state.showMinor ? 'metaMinorShown' : 'metaMinorHidden', minor);
-  if (!g.edges.length) s += t('metaNoEdges');
+  s += g.edges.length ? t('metaEdges', g.edges.length) : t('metaNoEdges');
   return s;
 }
 
@@ -662,17 +735,21 @@ function renderChangesChip(graph) {
   if (graph.changes) chip.textContent = t('chip', graph.changes.entries.length, graph.changes.date);
 }
 
-// 详情面板：白话在卡片上，专业信息（给 AI 的）收在这里；小函数带标签全量列出
+// 详情面板：块式布局——名字/层级/引用一行、签名一行、白话一行，永不压缩
 function renderDetail(file) {
   var el = document.getElementById('detail');
   if (!file) { el.hidden = true; return; }
-  var rows = file.functions.map(function (fn) {
-    var tag = fn.minor ? ' <span class="minor-tag">' + t('minorTag') + '</span>' : '';
-    return '<tr><td class="mono">' + esc(fn.name) + tag + '</td><td class="mono">' + esc(fn.level) + ' ' + esc(fn.signature) +
-      '</td><td>' + esc(fn.desc || '-') + '</td></tr>';
+  var blocks = file.functions.map(function (fn) {
+    var tag = fn.minor ? '<span class="minor-tag">' + t('minorTag') + '</span>' : '';
+    var refs = fn.refs !== '-' ? '<span class="d-refs">' + t('refs', esc(fn.refs)) + '</span>' : '';
+    var lv = fn.level !== '-' ? '<span class="d-lv">' + esc(fn.level) + '</span>' : '';
+    var sig = fn.signature ? '<div class="d-sig">' + esc(fn.signature) + '</div>' : '';
+    var desc = '<div class="d-desc' + (fn.desc ? '' : ' blank') + '">' + (fn.desc ? esc(fn.desc) : t('noDesc')) + '</div>';
+    return '<div class="d-fn"><div class="d-fn-head"><span class="d-name">' + esc(fn.name) + '</span>' + lv + tag + refs + '</div>' +
+      sig + desc + '</div>';
   }).join('');
   el.innerHTML = '<button class="d-close" data-close="1">✕</button><h3>' + esc(file.name) + '</h3>' +
-    '<div class="d-path">' + esc(file.path) + '</div><table>' + rows + '</table>' +
+    '<div class="d-path">' + esc(file.path) + '</div>' + blocks +
     '<div class="d-note">' + t('detailNote') + '</div>';
   el.hidden = false;
 }
@@ -694,6 +771,8 @@ function showToast(msg) {
 
 // ui.js — 次级交互：语言切换、细节开关、搜索、布局记忆——把"看多细、看哪种语言"都交给用户选
 
+var SCALE_STEPS = [0.85, 1, 1.2, 1.45];
+
 function initUi() {
   var langSel = document.getElementById('lang-select');
   langSel.value = getLang();
@@ -701,8 +780,29 @@ function initUi() {
   document.getElementById('btn-minor').onclick = toggleMinor;
   document.getElementById('btn-refresh').onclick = function () { location.reload(); };
   document.getElementById('btn-relayout').onclick = resetLayout;
+  document.getElementById('btn-card-minus').onclick = function () { setCardScale(-1); };
+  document.getElementById('btn-card-plus').onclick = function () { setCardScale(1); };
   document.getElementById('search').oninput = runSearch;
   updateChrome();
+}
+
+// 卡片缩放三档往返：布局重算，档位按浏览器记住
+function setCardScale(delta) {
+  var i = SCALE_STEPS.indexOf(state.cardScale);
+  if (i < 0) i = 1;
+  i = Math.max(0, Math.min(SCALE_STEPS.length - 1, i + delta));
+  if (SCALE_STEPS[i] === state.cardScale) return;
+  state.cardScale = SCALE_STEPS[i];
+  try { localStorage.setItem('babycode-scale', String(state.cardScale)); } catch (e) { i = i; }
+  relayout();
+}
+
+// 重算布局并套用用户手动挪过的位置（细节开关/缩放共用）
+function relayout() {
+  state.layout = computeLayout(state.graph, state.showMinor, state.cardScale);
+  applySavedPositions();
+  fitView();
+  refresh();
 }
 
 // 把工具栏、图例、占位符刷成当前语言
@@ -714,6 +814,8 @@ function updateChrome() {
   document.getElementById('empty-tip').textContent = t('emptyTip');
   document.getElementById('btn-prompt').textContent = t('genBtn');
   document.getElementById('btn-minor').textContent = t(state.showMinor ? 'minorHide' : 'minorShow');
+  document.getElementById('btn-card-minus').title = t('cardSmaller');
+  document.getElementById('btn-card-plus').title = t('cardBigger');
   document.getElementById('help').title = t('hint');
 }
 
@@ -728,10 +830,7 @@ function onLangChanged() {
 function toggleMinor() {
   state.showMinor = !state.showMinor;
   try { localStorage.setItem('babycode-minor', state.showMinor ? '1' : ''); } catch (e) { state.showMinor = state.showMinor; }
-  state.layout = computeLayout(state.graph, state.showMinor);
-  applySavedPositions();
-  fitView();
-  refresh();
+  relayout();
   updateChrome();
 }
 
@@ -755,7 +854,7 @@ function applySavedPositions() {
 // 一键回到自动排版（清掉记住的手动位置）
 function resetLayout() {
   try { localStorage.removeItem(posKey()); } catch (e) { return; }
-  state.layout = computeLayout(state.graph, state.showMinor);
+  state.layout = computeLayout(state.graph, state.showMinor, state.cardScale);
   fitView();
   refresh();
 }
@@ -778,7 +877,8 @@ function fileByPath(p) {
 
 // app.js — 交互层：启动装载、平移缩放、框选、拖卡片、载入数据、把选区变成指令
 
-var state = { graph: null, layout: null, sel: new Set(), view: { x: 0, y: 0, scale: 1 }, showMinor: false, isDemo: true };
+var state = { graph: null, layout: null, sel: new Set(), view: { x: 0, y: 0, scale: 1 },
+  showMinor: false, isDemo: true, cardScale: 1, focus: null };
 var gesture = null;
 
 function applyView() {
@@ -799,7 +899,7 @@ function refresh() {
 
 function setGraph(graph) {
   state.graph = graph;
-  state.layout = computeLayout(graph, state.showMinor);
+  state.layout = computeLayout(graph, state.showMinor, state.cardScale);
   applySavedPositions();
   state.sel = new Set();
   fitView();
@@ -945,8 +1045,25 @@ function onPrompt() {
   });
 }
 
+// 鼠标悬停卡片时，即时点亮它的所有连线（只改 class，不重绘）
+function hoverEdges(e, on) {
+  var card = e.target.closest ? e.target.closest('.card') : null;
+  if (!card) return;
+  var p = card.getAttribute('data-path');
+  var paths = document.querySelectorAll('#edges path');
+  for (var i = 0; i < paths.length; i++) {
+    if (paths[i].getAttribute('data-from') === p || paths[i].getAttribute('data-to') === p) {
+      paths[i].classList.toggle('hover-hot', on);
+    }
+  }
+}
+
 function initApp() {
   try { state.showMinor = localStorage.getItem('babycode-minor') === '1'; } catch (e) { state.showMinor = false; }
+  try {
+    var sc = parseFloat(localStorage.getItem('babycode-scale'));
+    if (SCALE_STEPS.indexOf(sc) >= 0) state.cardScale = sc;
+  } catch (e) { state.cardScale = 1; }
   var boot = typeof window !== 'undefined' && window.BABYCODE_GRAPH ? window.BABYCODE_GRAPH : null;
   initLang(boot && boot.meta ? boot.meta.lang : null);
   var canvas = document.getElementById('canvas');
@@ -968,6 +1085,11 @@ function initApp() {
   document.getElementById('instruction').addEventListener('keydown', function (e) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') onPrompt();
   });
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') renderDetail(null);
+  });
+  document.getElementById('cards').addEventListener('mouseover', function (e) { hoverEdges(e, true); });
+  document.getElementById('cards').addEventListener('mouseout', function (e) { hoverEdges(e, false); });
   window.addEventListener('dragover', function (e) { e.preventDefault(); document.body.classList.add('dropping'); });
   window.addEventListener('dragleave', function () { document.body.classList.remove('dropping'); });
   window.addEventListener('drop', function (e) {

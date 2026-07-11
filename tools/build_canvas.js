@@ -6,7 +6,7 @@ var ROOT = path.resolve(__dirname, '..');
 var SRC = path.join(ROOT, 'canvas');
 var OUT = path.join(ROOT, 'dist', 'babycode-canvas.html');
 var DEPLOY = path.join(ROOT, 'docs', 'registry', 'canvas.html');
-var VERSION = '2.2.0';
+var VERSION = '2.3.0';
 
 function readSrc(f) { return fs.readFileSync(path.join(SRC, f), 'utf8'); }
 
